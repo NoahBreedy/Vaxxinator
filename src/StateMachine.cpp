@@ -1,6 +1,6 @@
 #include <iostream>
 #include "StateMachine.h"
-#include "states/MainMenu.h"
+#include "MainMenu.h"
 
 /* Add your states to this fucntion if you want them to be recognized */
 void StateMachine::init() {
