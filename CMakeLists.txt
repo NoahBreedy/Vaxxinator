@@ -39,6 +39,7 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/StateMachine.cpp
     src/states/MainMenu.cpp
+    src/states/GameState.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

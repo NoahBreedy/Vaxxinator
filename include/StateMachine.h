@@ -4,23 +4,35 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <SDL.h>
+
 #include "DefaultState.h"
+
+#define CANVAS_WIDTH  320
+#define CANVAS_HEIGHT 240
 
 class State; 
 
 class StateMachine {
 public:
     StateMachine() = default;
-    
-    void init();
+    ~StateMachine();
+
+    bool init();
     void transition(const std::string& state_name);
 
     State* current_state = nullptr;
 
-private:
+    SDL_Window *window   = nullptr;
+    SDL_Surface *surface = nullptr;
+    SDL_Event event;
 
+private:
+    void init_states();
     void add(std::unique_ptr<State> state);
+
     std::map<std::string, std::unique_ptr<State>> state_map;
+    bool application_initialized = false;
 };
 
 #endif /* __STATE_MACHINE__ */

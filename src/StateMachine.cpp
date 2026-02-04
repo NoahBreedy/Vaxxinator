@@ -1,10 +1,31 @@
 #include <iostream>
 #include "StateMachine.h"
 #include "MainMenu.h"
+#include "GameState.h"
+
+/* SDL2 gets setup here and then we build our states */
+bool StateMachine::init() {
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {    
+        std::cout << "SDL_Init() fail... " << SDL_GetError() << std::endl;
+        return false;
+    }
+    
+    /* Create the window and surface to render to */
+    window = SDL_CreateWindow("Vaccinator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                                            CANVAS_WIDTH, CANVAS_HEIGHT, SDL_WINDOW_SHOWN);
+    surface = SDL_GetWindowSurface(window);
+
+    init_states();
+
+    application_initialized = true;
+
+    return true;
+}
 
 /* Add your states to this fucntion if you want them to be recognized */
-void StateMachine::init() {
+void StateMachine::init_states() {
     add(std::make_unique<MainMenu>(this));
+    add(std::make_unique<GameState>(this));
     
     transition("MainMenu"); // start at main menu state?
                             // maybe add a splash screen state later? lmk
@@ -28,4 +49,11 @@ void StateMachine::transition(const std::string& state_name) {
     current_state = state->second.get();
     current_state->enter();
 
+}
+
+StateMachine::~StateMachine(){
+    if(application_initialized) {
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+    }
 }
