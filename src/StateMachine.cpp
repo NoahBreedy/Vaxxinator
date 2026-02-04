@@ -51,9 +51,10 @@ void StateMachine::transition(const std::string& state_name) {
 
 }
 
-StateMachine::~StateMachine(){
+StateMachine::~StateMachine() {
     if(application_initialized) {
         SDL_DestroyWindow(window);
-        SDL_Quit();
     }
+    /* we can safely call SDL_Quit even if SDL_init fails */
+    SDL_Quit();
 }
