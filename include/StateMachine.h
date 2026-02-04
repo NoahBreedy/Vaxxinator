@@ -11,7 +11,7 @@
 #define CANVAS_WIDTH  320
 #define CANVAS_HEIGHT 240
 
-class State; 
+class State;
 
 class StateMachine {
 public:

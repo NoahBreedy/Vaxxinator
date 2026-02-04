@@ -2,12 +2,12 @@
 #include "MainMenu.h"
 
 #define STATE_NAME "MainMenu"
-MainMenu::MainMenu(StateMachine* machine): State(STATE_NAME, machine)   
+MainMenu::MainMenu(StateMachine* machine): State(STATE_NAME, machine)
 {
 }
 
 void MainMenu::render() {
-    SDL_FillRect(state_machine->surface, nullptr, SDL_MapRGB(state_machine->surface->format,255,0,0));   
+    SDL_FillRect(state_machine->surface, nullptr, SDL_MapRGB(state_machine->surface->format,255,0,0));
 }
 
 void MainMenu::update() {
@@ -15,7 +15,7 @@ void MainMenu::update() {
     if(state_machine->event.type == SDL_KEYDOWN && state_machine->event.key.keysym.sym == SDLK_SPACE) {
             state_machine->transition("GameState");
     }
-    SDL_UpdateWindowSurface(state_machine->window); 
+    SDL_UpdateWindowSurface(state_machine->window);
     SDL_Delay(10);
 }
 

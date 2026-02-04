@@ -23,14 +23,14 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Running on Windows")
     set(OS_LIBRARIES
-        mingw32 
+        mingw32
         SDL2main
     )
-    
-    # This is needed to automatically get the linker library directory on windows 
+
+    # This is needed to automatically get the linker library directory on windows
     get_target_property(SDL2_LIB_FILE SDL2::SDL2 IMPORTED_IMPLIB)
     get_filename_component(SDL2_LIBRARY_DIR "${SDL2_LIB_FILE}" DIRECTORY)
-    
+
     link_directories(${SDL2_LIBRARY_DIR})
 
 endif()
@@ -44,7 +44,7 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     ${OS_LIBRARIES}
-    SDL2 
+    SDL2
 )
 
 # Copy assets folder next to the executable (needed later for when we include images)

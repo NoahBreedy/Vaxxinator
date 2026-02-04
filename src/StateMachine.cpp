@@ -5,13 +5,13 @@
 
 /* SDL2 gets setup here and then we build our states */
 bool StateMachine::init() {
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {    
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
         std::cout << "SDL_Init() fail... " << SDL_GetError() << std::endl;
         return false;
     }
-    
+
     /* Create the window and surface to render to */
-    window = SDL_CreateWindow("Vaccinator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+    window = SDL_CreateWindow("Vaccinator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                             CANVAS_WIDTH, CANVAS_HEIGHT, SDL_WINDOW_SHOWN);
     surface = SDL_GetWindowSurface(window);
 
@@ -26,7 +26,7 @@ bool StateMachine::init() {
 void StateMachine::init_states() {
     add(std::make_unique<MainMenu>(this));
     add(std::make_unique<GameState>(this));
-    
+
     transition("MainMenu"); // start at main menu state?
                             // maybe add a splash screen state later? lmk
 }
