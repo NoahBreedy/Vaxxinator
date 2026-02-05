@@ -7,7 +7,8 @@ MainMenu::MainMenu(StateMachine* machine): State(STATE_NAME, machine)
 }
 
 void MainMenu::render() {
-    SDL_FillRect(state_machine->surface, nullptr, SDL_MapRGB(state_machine->surface->format,255,0,0));
+    SDL_SetRenderDrawColor(state_machine->renderer, 0xFF, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(state_machine->renderer);
 }
 
 void MainMenu::update() {
@@ -15,7 +16,7 @@ void MainMenu::update() {
     if(state_machine->event.type == SDL_KEYDOWN && state_machine->event.key.keysym.sym == SDLK_SPACE) {
             state_machine->transition("GameState");
     }
-    SDL_UpdateWindowSurface(state_machine->window);
+    SDL_RenderPresent(state_machine->renderer);
     SDL_Delay(10);
 }
 

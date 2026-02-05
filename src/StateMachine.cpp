@@ -13,7 +13,7 @@ bool StateMachine::init() {
     /* Create the window and surface to render to */
     window = SDL_CreateWindow("Vaccinator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                             CANVAS_WIDTH, CANVAS_HEIGHT, SDL_WINDOW_SHOWN);
-    surface = SDL_GetWindowSurface(window);
+    renderer = SDL_CreateRenderer(window, -1, 0);
 
     init_states();
 
@@ -53,6 +53,7 @@ void StateMachine::transition(const std::string& state_name) {
 
 StateMachine::~StateMachine() {
     if(application_initialized) {
+        SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
     }
     /* we can safely call SDL_Quit even if SDL_init fails */

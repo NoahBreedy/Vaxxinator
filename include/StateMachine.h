@@ -23,8 +23,8 @@ public:
 
     State* current_state = nullptr;
 
-    SDL_Window *window   = nullptr;
-    SDL_Surface *surface = nullptr;
+    SDL_Window   *window   = nullptr;
+    SDL_Renderer *renderer = nullptr;
     SDL_Event event;
 
 private:
