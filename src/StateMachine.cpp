@@ -11,7 +11,7 @@ bool StateMachine::init() {
     }
 
     /* Create the window and surface to render to */
-    window = SDL_CreateWindow("Vaccinator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    window = SDL_CreateWindow("Vaxxinator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                             CANVAS_WIDTH, CANVAS_HEIGHT, SDL_WINDOW_SHOWN);
     renderer = SDL_CreateRenderer(window, -1, 0);
 
