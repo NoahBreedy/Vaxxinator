@@ -12,8 +12,13 @@ bool StateMachine::init() {
 
     /* Create the window and surface to render to */
     window = SDL_CreateWindow("Vaxxinator", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                            CANVAS_WIDTH, CANVAS_HEIGHT, SDL_WINDOW_SHOWN);
-    renderer = SDL_CreateRenderer(window, -1, 0);
+                                            CANVAS_WIDTH, CANVAS_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    
+    
+    /* Enable hardware acceleration for the renderer and allow integer scaling */
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_RenderSetLogicalSize(renderer, CANVAS_WIDTH, CANVAS_HEIGHT);
+    SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
 
     init_states();
 
