@@ -1,18 +1,19 @@
 #include <iostream>
-#include "GameState.h"
+#include "DemoState.h"
 #include "input.h"
 
-#define STATE_NAME "GameState"
-GameState::GameState(StateMachine* machine): State(STATE_NAME, machine)
+#define STATE_NAME "DemoState"
+DemoState::DemoState(StateMachine* machine): State(STATE_NAME, machine)
 {
 }
 
-void GameState::render() {
+void DemoState::render() {
     SDL_SetRenderDrawColor(state_machine->renderer, 0x00, 0x00, 0xFF, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(state_machine->renderer);
 }
 
-void GameState::update() {
+void DemoState::update() {
+    SDL_Keycode key = pop_key();
     if (has_key()) {
         SDL_Keycode key = pop_key();
 
@@ -22,13 +23,13 @@ void GameState::update() {
     }
 
     SDL_RenderPresent(state_machine->renderer);
-    SDL_Delay(10);
+    //SDL_Delay(10);
 }
 
-void GameState::enter() {
+void DemoState::enter() {
     std::cout << "Entering " << STATE_NAME << std::endl;
 }
 
-void GameState::exit() {
+void DemoState::exit() {
     std::cout << "Exiting " << STATE_NAME << std::endl;
 }
