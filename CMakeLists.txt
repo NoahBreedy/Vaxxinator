@@ -44,10 +44,12 @@ endif()
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/input.cpp
     src/StateMachine.cpp
     src/states/MainMenu.cpp
     src/states/GameState.cpp
     src/states/IntroScreen.cpp
+    src/states/DemoState.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

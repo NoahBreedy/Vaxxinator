@@ -4,6 +4,7 @@
 #include "MainMenu.h"
 #include "GameState.h"
 #include "IntroScreen.h"
+#include "DemoState.h"
 
 /* SDL2 gets setup here and then we build our states */
 bool StateMachine::init() {
@@ -40,6 +41,7 @@ void StateMachine::init_states() {
     add(std::make_unique<MainMenu>(this));
     add(std::make_unique<GameState>(this));
     add(std::make_unique<IntroScreen>(this));
+    add(std::make_unique<DemoState>(this));
 
     //transition("MainMenu"); // start at main menu state?
                             // maybe add a splash screen state later? lmk
