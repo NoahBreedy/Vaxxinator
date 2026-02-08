@@ -1,12 +1,20 @@
 #include <iostream>
+#include <SDL_ttf.h>
 #include "StateMachine.h"
 #include "MainMenu.h"
 #include "GameState.h"
+#include "IntroScreen.h"
 
 /* SDL2 gets setup here and then we build our states */
 bool StateMachine::init() {
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
         std::cout << "SDL_Init() fail... " << SDL_GetError() << std::endl;
+        return false;
+    }
+
+    if(TTF_Init() < 0) {
+        std::cout << "TTF_Init() fail... " << TTF_GetError() << std::endl;
+        SDL_Quit();
         return false;
     }
 
@@ -31,9 +39,12 @@ bool StateMachine::init() {
 void StateMachine::init_states() {
     add(std::make_unique<MainMenu>(this));
     add(std::make_unique<GameState>(this));
+    add(std::make_unique<IntroScreen>(this));
 
-    transition("MainMenu"); // start at main menu state?
+    //transition("MainMenu"); // start at main menu state?
                             // maybe add a splash screen state later? lmk
+
+    transition("IntroScreen");
 }
 
 void StateMachine::add(std::unique_ptr<State> state) {
@@ -62,5 +73,6 @@ StateMachine::~StateMachine() {
         SDL_DestroyWindow(window);
     }
     /* we can safely call SDL_Quit even if SDL_init fails */
+    TTF_Quit();
     SDL_Quit();
 }
