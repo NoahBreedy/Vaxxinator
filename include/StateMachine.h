@@ -7,6 +7,7 @@
 #include <SDL.h>
 
 #include "DefaultState.h"
+#include "input.h"
 
 #define CANVAS_WIDTH  320
 #define CANVAS_HEIGHT 240
@@ -26,6 +27,8 @@ public:
     SDL_Window   *window   = nullptr;
     SDL_Renderer *renderer = nullptr;
     SDL_Event event;
+    
+    Input input_buffer;
 
 private:
     void init_states();

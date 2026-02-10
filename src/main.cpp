@@ -5,14 +5,13 @@
 
 int main(int argc, char* argv[]) {
     StateMachine application;
-    SDL_Event event;
 
     if(!application.init()) {
         return EXIT_FAILURE;
     }
 
-    while(SDL_PollEvent(&application.event) == 0 || application.event.type != SDL_QUIT){
-        update_key_buffer(event);
+    while(!application.input_buffer.quit_requested()){
+        application.input_buffer.update(application.event);
         application.current_state->render();
         application.current_state->update();
     }
