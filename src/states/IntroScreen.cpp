@@ -21,6 +21,8 @@ void IntroScreen::render() {
     // Moves up scroll_speed pixles every second
     float scroll_offset = (elapsed_time / 1000.0f) * scroll_speed;
 
+    float base_hue = std::fmod(elapsed_time * 0.05f, 360.0f);
+
     for (size_t i = 0; i < text_textures.size(); ++i) {
         if (text_textures[i] == nullptr) continue;
 
@@ -35,6 +37,13 @@ void IntroScreen::render() {
         
         // Create destination rectangle
         SDL_Rect dest_rect = {x, y, text_width, text_height};
+
+        float hue = fmod(base_hue + i * 20.0f, 360.0f);
+
+        uint8_t r, g, b;
+        hsv_to_rgb(hue, 1.0f, 1.0f, r, g, b);
+
+        SDL_SetTextureColorMod(text_textures[i], r, g, b);
         
         SDL_RenderCopy(state_machine->renderer, text_textures[i], nullptr, &dest_rect);
     }
@@ -77,9 +86,9 @@ void IntroScreen::enter() {
     std::cout << "Entering " << STATE_NAME << std::endl;
 
     elapsed_time = 0;
-    scroll_speed = 50.0f;
-    line_spacing = 80.0f;
-    font = TTF_OpenFont("assets/fonts/daydream.otf", 8);
+    scroll_speed = 35.0f;
+    line_spacing = 60.0f;
+    font = TTF_OpenFont("assets/fonts/daydream.otf", 16);
 
     if (font == nullptr) {
         std::cerr << "Error: Failed to load font: " << TTF_GetError() << std::endl;
@@ -87,11 +96,26 @@ void IntroScreen::enter() {
 
     SDL_Color white = {255, 255, 255, 255};
     const char* text_lines[] = {
-        "This is a test for the Vaxxinator",
-        "introscreen text rendering1",
-        "introscreen text rendering2",
-        "introscreen text rendering3",
-        "introscreen text rendering4"
+        "THE YEAR IS 1997",
+        "THE EARTH HAS",
+        "BECOME INFECTED",
+        "WITH A DEATHLY AND",
+        "DEADLY DISEASE!",
+        "THE AMOS FOUNDATION",
+        "IN PARTNERSHIP WITH",
+        "TEENYINC HAS CREATED",
+        "WHAT JUST MAY BE",
+        "THE LAST HOPE FOR",
+        "HUMANITY TO SURVIVE",
+        "NANOSCOPIC AGENTS",
+        "ARE PROGGRAMED FOR",
+        "ONE THING...",
+        "COMPLETE PATHOGEN",
+        "EXTERMINATION",
+        "WILL YOU AID THEM?",
+        "CAN YOU BECOME A",
+        " ",
+        "VAXXINATOR",
     };
 
     for (const auto& line : text_lines) {

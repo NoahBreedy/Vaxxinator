@@ -3,8 +3,10 @@
 
 #include <vector>
 #include <SDL_ttf.h>
+#include <cmath>
 
 #include "DefaultState.h"
+#include "core/Utils.h"
 
 class IntroScreen : public State {
 public:

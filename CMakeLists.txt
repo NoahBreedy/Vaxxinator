@@ -48,6 +48,7 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/core/Input.cpp
     src/core/StateMachine.cpp
+    src/core/Utils.cpp
     src/graphics/Animation.cpp
     src/graphics/Sprite.cpp
     src/states/MainMenu.cpp
