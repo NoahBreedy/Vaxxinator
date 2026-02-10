@@ -16,7 +16,7 @@ void IntroScreen::render() {
     }
 
     int screen_width, screen_height;
-    SDL_GetRendererOutputSize(state_machine->renderer, &screen_width, &screen_height);
+    SDL_RenderGetLogicalSize(state_machine->renderer, &screen_width, &screen_height);
 
     // Moves up scroll_speed pixles every second
     float scroll_offset = (elapsed_time / 1000.0f) * scroll_speed;
@@ -49,7 +49,7 @@ void IntroScreen::update() {
     // Check if intro is complete
     if (!text_textures.empty()) {
         int screen_height;
-        SDL_GetRendererOutputSize(state_machine->renderer, nullptr, &screen_height);
+        SDL_RenderGetLogicalSize(state_machine->renderer, nullptr, &screen_height);
         
         float scroll_offset = (elapsed_time / 1000.0f) * scroll_speed;
         
@@ -75,7 +75,7 @@ void IntroScreen::enter() {
     elapsed_time = 0;
     scroll_speed = 50.0f;
     line_spacing = 80.0f;
-    font = TTF_OpenFont("assets/News_Gothic_Bold.ttf", 28);
+    font = TTF_OpenFont("assets/daydream.otf", 8);
 
     if (font == nullptr) {
         std::cerr << "Error: Failed to load font: " << TTF_GetError() << std::endl;
