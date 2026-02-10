@@ -5,10 +5,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
 
 include_directories(
    PUBLIC include/
    PUBLIC ${SDL2_INCLUDE_DIRS}
+   PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS}
 )
 
 # Get the proper libraries to link basesd on platform
@@ -38,6 +40,8 @@ endif()
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/input.cpp
+    src/Animation.cpp
+    src/Sprite.cpp
     src/StateMachine.cpp
     src/states/MainMenu.cpp
     src/states/GameState.cpp
@@ -47,6 +51,7 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     ${OS_LIBRARIES}
     SDL2
+    SDL2_image
 )
 
 # Copy assets folder next to the executable (needed later for when we include images)
