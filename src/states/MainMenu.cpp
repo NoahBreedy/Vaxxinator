@@ -12,10 +12,14 @@ void MainMenu::render() {
 }
 
 void MainMenu::update() {
-    /* Someone should write a utility function for handling btn presses... */
-    if(state_machine->event.type == SDL_KEYDOWN && state_machine->event.key.keysym.sym == SDLK_SPACE) {
+    if (state_machine->input_buffer.has_key()) {
+        SDL_Keycode key = state_machine->input_buffer.pop_key();
+
+        if (key == SDLK_SPACE) {
             state_machine->transition("GameState");
+        }
     }
+
     SDL_RenderPresent(state_machine->renderer);
     SDL_Delay(10);
 }
