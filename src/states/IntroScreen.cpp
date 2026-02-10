@@ -79,7 +79,7 @@ void IntroScreen::enter() {
     elapsed_time = 0;
     scroll_speed = 50.0f;
     line_spacing = 80.0f;
-    font = TTF_OpenFont("assets/daydream.otf", 8);
+    font = TTF_OpenFont("assets/fonts/daydream.otf", 8);
 
     if (font == nullptr) {
         std::cerr << "Error: Failed to load font: " << TTF_GetError() << std::endl;
