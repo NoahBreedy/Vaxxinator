@@ -46,10 +46,10 @@ endif()
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/input.cpp
-    src/Animation.cpp
-    src/Sprite.cpp
-    src/StateMachine.cpp
+    src/core/Input.cpp
+    src/core/StateMachine.cpp
+    src/graphics/Animation.cpp
+    src/graphics/Sprite.cpp
     src/states/MainMenu.cpp
     src/states/GameState.cpp
     src/states/IntroScreen.cpp

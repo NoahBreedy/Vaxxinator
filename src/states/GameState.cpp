@@ -1,5 +1,5 @@
 #include <iostream>
-#include "GameState.h"
+#include "states/GameState.h"
 
 #define STATE_NAME "GameState"
 GameState::GameState(StateMachine* machine): State(STATE_NAME, machine)

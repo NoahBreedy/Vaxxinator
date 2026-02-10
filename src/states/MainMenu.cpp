@@ -1,5 +1,5 @@
 #include <iostream>
-#include "MainMenu.h"
+#include "states/MainMenu.h"
 
 #define STATE_NAME "MainMenu"
 MainMenu::MainMenu(StateMachine* machine): State(STATE_NAME, machine)

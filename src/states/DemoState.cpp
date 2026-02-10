@@ -1,5 +1,5 @@
 #include <iostream>
-#include "DemoState.h"
+#include "states/DemoState.h"
 
 #define STATE_NAME "DemoState"
 DemoState::DemoState(StateMachine* machine): State(STATE_NAME, machine)

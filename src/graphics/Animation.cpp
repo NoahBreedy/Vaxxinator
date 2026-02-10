@@ -1,4 +1,4 @@
-#include "Animation.h"
+#include "graphics/Animation.h"
 #include <iostream>
 
 Animation::Animation(SDL_Renderer* renderer,

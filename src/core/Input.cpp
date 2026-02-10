@@ -1,4 +1,4 @@
-#include "input.h"
+#include "core/Input.h"
 #include <cstring>
 
 Input::Input() {

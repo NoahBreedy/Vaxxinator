@@ -1,5 +1,5 @@
-#include "Sprite.h"
-#include "Animation.h"
+#include "graphics/Sprite.h"
+#include "graphics/Animation.h"
 #include <iostream>
 
 Sprite::Sprite(SDL_Renderer* renderer)

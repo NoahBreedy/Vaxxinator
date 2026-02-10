@@ -1,5 +1,5 @@
 #include <iostream>
-#include "IntroScreen.h"
+#include "states/IntroScreen.h"
 
 #define STATE_NAME "IntroScreen"
 

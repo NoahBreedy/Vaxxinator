@@ -6,8 +6,8 @@
 #include <memory>
 #include <SDL.h>
 
-#include "DefaultState.h"
-#include "input.h"
+#include "states/DefaultState.h"
+#include "core/Input.h"
 
 #define CANVAS_WIDTH  320
 #define CANVAS_HEIGHT 240

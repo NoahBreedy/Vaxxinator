@@ -2,7 +2,7 @@
 #define __DEFAULT_STATE__
 
 #include <string>
-#include "StateMachine.h"
+#include "core/StateMachine.h"
 
 class StateMachine;
 

@@ -1,10 +1,10 @@
 #include <iostream>
 #include <SDL_ttf.h>
-#include "StateMachine.h"
-#include "MainMenu.h"
-#include "GameState.h"
-#include "IntroScreen.h"
-#include "DemoState.h"
+#include "core/StateMachine.h"
+#include "states/MainMenu.h"
+#include "states/GameState.h"
+#include "states/IntroScreen.h"
+#include "states/DemoState.h"
 
 /* SDL2 gets setup here and then we build our states */
 bool StateMachine::init() {
