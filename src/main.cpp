@@ -1,8 +1,6 @@
 #include <iostream>
 #include "core/StateMachine.h"
 
-#include "core/Input.h"
-
 int main(int argc, char* argv[]) {
     StateMachine application;
 
