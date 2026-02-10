@@ -1,6 +1,5 @@
 #include <iostream>
 #include "GameState.h"
-#include "input.h"
 
 #define STATE_NAME "GameState"
 GameState::GameState(StateMachine* machine): State(STATE_NAME, machine)
@@ -13,8 +12,8 @@ void GameState::render() {
 }
 
 void GameState::update() {
-    if (has_key()) {
-        SDL_Keycode key = pop_key();
+    if (state_machine->input_buffer.has_key()) {
+        SDL_Keycode key = state_machine->input_buffer.pop_key();
 
         if (key == SDLK_SPACE) {
             state_machine->transition("MainMenu");
