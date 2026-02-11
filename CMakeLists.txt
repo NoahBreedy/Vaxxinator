@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(Vaxxinator LANGUAGES CXX)
+project(Vaxxinator LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -46,10 +46,10 @@ endif()
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
-    src/core/open-simplex-noise.c
     src/core/Input.cpp
     src/core/StateMachine.cpp
     src/core/Utils.cpp
+    src/core/open-simplex-noise.c
     src/graphics/Animation.cpp
     src/graphics/Sprite.cpp
     src/states/MainMenu.cpp
