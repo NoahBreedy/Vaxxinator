@@ -19,9 +19,9 @@ private:
     /* This stuff is boiler plate needed for getting 
      * all of the pixel data out of a texture (hardware accelerated)
      */
-    SDL_Texture* background_texture;
+    SDL_Texture *background_texture;
     uint32_t format;
-    void* pixels;
+    void *pixels;
     int pitch;
 
     osn_context *noise_ctx0;
