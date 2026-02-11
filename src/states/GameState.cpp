@@ -19,9 +19,9 @@ GameState::GameState(StateMachine* machine): State(STATE_NAME, machine)
     SDL_QueryTexture(background_texture, &format , nullptr, nullptr, nullptr);
     SDL_PixelFormat *pixel_format = SDL_AllocFormat(format);
 
-    /* For now I make the color map hold reds but we can randomize it... */
+    /* For now I make the color map hold purple but we can randomize it... */
     for(int i = 0; i < 256; i++){
-        color_map[i] = SDL_MapRGB(pixel_format,i,0,0);
+        color_map[i] = SDL_MapRGB(pixel_format,i,0,i);
     }
     
     pixels = nullptr;
