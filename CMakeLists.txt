@@ -46,6 +46,7 @@ endif()
 
 add_executable(${PROJECT_NAME}
     src/main.cpp
+    src/core/open-simplex-noise.c
     src/core/Input.cpp
     src/core/StateMachine.cpp
     src/core/Utils.cpp
