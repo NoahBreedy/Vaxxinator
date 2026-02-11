@@ -59,6 +59,7 @@ add_executable(${PROJECT_NAME}
     src/states/GameState.cpp
     src/states/IntroScreen.cpp
     src/states/DemoState.cpp
+    src/entities/BloodCell.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

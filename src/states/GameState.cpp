@@ -21,7 +21,7 @@ GameState::GameState(StateMachine* machine): State(STATE_NAME, machine)
 
     /* For now I make the color map hold purple but we can randomize it... */
     for(int i = 0; i < 256; i++){
-        color_map[i] = SDL_MapRGB(pixel_format,i,0,i);
+        color_map[i] = SDL_MapRGB(pixel_format,i,0,0);
     }
     
     pixels = nullptr;
@@ -62,6 +62,10 @@ void GameState::render() {
 
     /* Blit the texture to the renderer */
     SDL_RenderCopy(state_machine->renderer, background_texture, nullptr, nullptr);
+
+    for(BloodCell cell : cells) {
+        cell.render(state_machine->renderer);
+    }
 }
 
 void GameState::update() {
@@ -74,6 +78,10 @@ void GameState::update() {
     }
 
     frame_count++;
+    
+    for(int i = 0; i < cells.size(); i++) {
+        cells[i].update();
+    }
 
     SDL_RenderPresent(state_machine->renderer);
     SDL_Delay(10);
@@ -96,6 +104,8 @@ void GameState::enter() {
     );
 
     frame_count = 0;
+
+    cells.push_back(BloodCell(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 8, true, state_machine->renderer));
 }
 
 void GameState::exit() {
@@ -105,4 +115,7 @@ void GameState::exit() {
     open_simplex_noise_free(noise_ctx1);
     SDL_DestroyTexture(background_texture);
     pixels = nullptr;
+
+    cells.clear();
+
 }

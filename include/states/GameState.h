@@ -2,9 +2,11 @@
 #define __GAME_STATE__
 
 #include <cstdint>
+#include <vector>
 
 #include "DefaultState.h"
 #include "core/open-simplex-noise.h"
+#include "entities/BloodCell.h"
 
 class GameState : public State {
 public:
@@ -31,6 +33,8 @@ private:
     const int MOVEMENT_SCALER = 8;
 
     uint64_t frame_count;
+
+    std::vector<BloodCell> cells;
 };
 
 #endif /* __GAME_STATE__ */

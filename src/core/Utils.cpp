@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <cstdlib>
 #include <cmath>
 
 /* CHAT-GPT hsv to rgb function (i'll verify it later) */
@@ -19,4 +20,13 @@ void hsv_to_rgb(float h, float s, float v, uint8_t& r, uint8_t& g, uint8_t& b) {
     r = static_cast<uint8_t>((rf + m) * 255);
     g = static_cast<uint8_t>((gf + m) * 255);
     b = static_cast<uint8_t>((bf + m) * 255);
+}
+
+float rand_float(float min, float max) {
+    float scale = (float)std::rand() / (float)RAND_MAX;
+    return min + scale * (max - min);
+}
+
+double distance(int x1, int y1, int x2, int y2) {
+    return std::sqrt(std::pow(x1-x2,2) + std::pow(y1-y2,2));
 }
