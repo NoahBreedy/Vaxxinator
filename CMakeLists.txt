@@ -7,12 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_image REQUIRED)
+find_package(SDL2_gfx REQUIRED)
 
 include_directories(
    PUBLIC include/
    PUBLIC ${SDL2_INCLUDE_DIRS}
    PUBLIC ${SDL2_TTF_INCLUDE_DIRS}
    PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS}
+   PUBLIC ${SDL2_GFX_INCLUDE_DIRS}
 )
 
 # Get the proper libraries to link basesd on platform
@@ -41,6 +43,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     get_filename_component(SDL2_TTF_LIBRARY_DIR "${SDL2_TTF_LIB_FILE}" DIRECTORY)
     
     link_directories(${SDL2_TTF_LIBRARY_DIR})
+    link_directories(${SDL2_GFX_LIBRARIES})
 
 endif()
 
@@ -60,6 +63,7 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     ${OS_LIBRARIES}
+    SDL2_gfx
     SDL2
     SDL2_ttf
     SDL2_image
