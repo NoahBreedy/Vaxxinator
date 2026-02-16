@@ -6,6 +6,16 @@
 #include "states/IntroScreen.h"
 #include "states/DemoState.h"
 
+static void handleClayError(Clay_ErrorData error) {
+    std::cerr << "[Clay] " << error.errorText.chars << std::endl;
+}
+
+static Clay_Dimensions measureText(Clay_StringSlice text,
+                                   Clay_TextElementConfig* config,
+                                   void* userData) {
+    return SDL2_MeasureText(text, config, userData);
+}
+
 /* SDL2 gets setup here and then we build our states */
 bool StateMachine::init() {
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
@@ -29,6 +39,7 @@ bool StateMachine::init() {
     SDL_RenderSetLogicalSize(renderer, CANVAS_WIDTH, CANVAS_HEIGHT);
     SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
 
+    init_clay();
     init_states();
 
     application_initialized = true;
@@ -69,8 +80,40 @@ void StateMachine::transition(const std::string& state_name) {
 
 }
 
+void StateMachine::init_clay() {
+    // Load the font
+    fonts[FONT_BODY].fontId = FONT_BODY;
+    fonts[FONT_BODY].font   = TTF_OpenFont("assets/fonts/News_Gothic_Bold.ttf", 48);
+    if (!fonts[FONT_BODY].font) {
+        std::cerr << "TTF_OpenFont failed: " << TTF_GetError() << std::endl;
+    }
+
+    // Allocate Clay's memory arena
+    uint64_t memorySize = Clay_MinMemorySize();
+    clay_memory = malloc(memorySize);
+    clay_arena = Clay_CreateArenaWithCapacityAndMemory(memorySize, clay_memory);
+
+    // Initialize Clay
+    Clay_Initialize(
+        clay_arena,
+        { (float)CANVAS_WIDTH, (float)CANVAS_HEIGHT },
+        { handleClayError }
+    );
+    Clay_SetMeasureTextFunction(measureText, fonts);
+}
+
+void StateMachine::cleanup_clay() {
+    if (fonts[FONT_BODY].font) {
+        TTF_CloseFont(fonts[FONT_BODY].font);
+        fonts[FONT_BODY].font = nullptr;
+    }
+    free(clay_memory);
+    clay_memory = nullptr;
+}
+
 StateMachine::~StateMachine() {
     if(application_initialized) {
+        cleanup_clay();
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
     }
