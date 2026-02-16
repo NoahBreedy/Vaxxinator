@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
-project(Vaxxinator LANGUAGES CXX)
+project(Vaxxinator LANGUAGES CXX C)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(SDL2 REQUIRED)
@@ -55,6 +55,12 @@ add_executable(${PROJECT_NAME}
     src/states/GameState.cpp
     src/states/IntroScreen.cpp
     src/states/DemoState.cpp
+    src/clay/clay_renderer_SDL2.c
+)
+
+set_source_files_properties(
+    src/clay/clay_renderer_SDL2.c
+    PROPERTIES LANGUAGE C
 )
 
 target_link_libraries(${PROJECT_NAME}
