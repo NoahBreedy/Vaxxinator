@@ -8,6 +8,16 @@ IntroScreen::IntroScreen(StateMachine* machine): State(STATE_NAME, machine)
 }
 
 void IntroScreen::render() {
+    // Check if window size changed
+    int current_width, current_height;
+    SDL_GetRendererOutputSize(state_machine->renderer, &current_width, &current_height);
+    
+    if (current_width != last_window_width || current_height != last_window_height) {
+        last_window_width = current_width;
+        last_window_height = current_height;
+        createTextTextures();  // Regenerate at new size
+    }
+
     SDL_SetRenderDrawColor(state_machine->renderer, 0x00, 0x00, 0x00, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(state_machine->renderer);
 
@@ -16,10 +26,13 @@ void IntroScreen::render() {
     }
 
     int screen_width, screen_height;
-    SDL_RenderGetLogicalSize(state_machine->renderer, &screen_width, &screen_height);
+    SDL_GetRendererOutputSize(state_machine->renderer, &screen_width, &screen_height);
+
+    float scaled_line_spacing = line_spacing * state_machine->ui_scale;
+    float scaled_scroll_speed = scroll_speed * std::sqrt(state_machine->ui_scale);
 
     // Moves up scroll_speed pixles every second
-    float scroll_offset = (elapsed_time / 1000.0f) * scroll_speed;
+    float scroll_offset = (elapsed_time / 1000.0f) * scaled_scroll_speed;
 
     float base_hue = std::fmod(elapsed_time * 0.05f, 360.0f);
 
@@ -30,7 +43,7 @@ void IntroScreen::render() {
         SDL_QueryTexture(text_textures[i], nullptr, nullptr, &text_width, &text_height);
 
         // Calculate vertical position (start from bottom, move up)
-        int y = screen_height - scroll_offset + (i * line_spacing);
+        int y = screen_height - scroll_offset + (i * scaled_line_spacing);
         
         // Center horizontally
         int x = (screen_width - text_width) / 2;
@@ -47,6 +60,8 @@ void IntroScreen::render() {
         
         SDL_RenderCopy(state_machine->renderer, text_textures[i], nullptr, &dest_rect);
     }
+
+    SDL_RenderPresent(state_machine->renderer);
 }
 
 void IntroScreen::update() {
@@ -62,7 +77,7 @@ void IntroScreen::update() {
     // Check if intro is complete
     if (!text_textures.empty()) {
         int screen_height;
-        SDL_RenderGetLogicalSize(state_machine->renderer, nullptr, &screen_height);
+        SDL_GetRendererOutputSize(state_machine->renderer, nullptr, &screen_height);
         
         float scroll_offset = (elapsed_time / 1000.0f) * scroll_speed;
         
@@ -77,7 +92,6 @@ void IntroScreen::update() {
         }
     }
 
-    SDL_RenderPresent(state_machine->renderer);
     SDL_Delay(10);
     elapsed_time += 10;
 }
@@ -86,12 +100,51 @@ void IntroScreen::enter() {
     std::cout << "Entering " << STATE_NAME << std::endl;
 
     elapsed_time = 0;
-    scroll_speed = 35.0f;
-    line_spacing = 60.0f;
-    font = TTF_OpenFont("assets/fonts/daydream.otf", 16);
+    scroll_speed = 50.0f;
+    line_spacing = 200.0f;
+    
+    SDL_GetRendererOutputSize(state_machine->renderer, &last_window_width, &last_window_height);
+    
+    createTextTextures();
+}
+
+void IntroScreen::exit() {
+    std::cout << "Exiting " << STATE_NAME << std::endl;
+    if (font != nullptr) {
+        TTF_CloseFont(font);
+        font = nullptr;
+    }
+
+    for (auto& texture : text_textures) {
+        if (texture != nullptr) {
+            SDL_DestroyTexture(texture);
+        }
+    }
+    text_textures.clear();
+}
+
+void IntroScreen::createTextTextures() {
+    // Clear old textures
+    for (auto& texture : text_textures) {
+        if (texture != nullptr) {
+            SDL_DestroyTexture(texture);
+        }
+    }
+    text_textures.clear();
+
+    // Close old font if it exists
+    if (font != nullptr) {
+        TTF_CloseFont(font);
+    }
+
+    // Calculate scaled font size
+    const int base_font_size = 48;
+    int scaled_size = (int)(base_font_size * state_machine->ui_scale);
+    font = TTF_OpenFont("assets/fonts/daydream.otf", scaled_size);
 
     if (font == nullptr) {
         std::cerr << "Error: Failed to load font: " << TTF_GetError() << std::endl;
+        return;
     }
 
     SDL_Color white = {255, 255, 255, 255};
@@ -133,22 +186,6 @@ void IntroScreen::enter() {
         }
 
         text_textures.push_back(texture);
-
         SDL_FreeSurface(text_surface);
     }
-}
-
-void IntroScreen::exit() {
-    std::cout << "Exiting " << STATE_NAME << std::endl;
-    if (font != nullptr) {
-        TTF_CloseFont(font);
-        font = nullptr;
-    }
-
-    for (auto& texture : text_textures) {
-        if (texture != nullptr) {
-            SDL_DestroyTexture(texture);
-        }
-    }
-    text_textures.clear();
 }

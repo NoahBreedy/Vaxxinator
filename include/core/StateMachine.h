@@ -13,6 +13,7 @@
 
 #define CANVAS_WIDTH  320
 #define CANVAS_HEIGHT 240
+#define BASE_SCALE 0.25
 #define MAX_FONTS 1
 
 enum FontId {
@@ -41,6 +42,13 @@ public:
     Clay_Arena clay_arena;
     Clay_RenderCommandArray clay_render_commands;
     SDL2_Font fonts[MAX_FONTS];
+    
+    // Window dimensions
+    int window_width = CANVAS_WIDTH;
+    int window_height = CANVAS_HEIGHT;
+    float ui_scale = BASE_SCALE;
+
+    void update_ui_scale() { ui_scale = (window_width * BASE_SCALE) / (float)CANVAS_WIDTH; }
 
 private:
     void init_states();
