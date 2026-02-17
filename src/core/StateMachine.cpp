@@ -15,6 +15,22 @@ static Clay_Dimensions measureText(Clay_StringSlice text,
                                    void* userData) {
     return SDL2_MeasureText(text, config, userData);
 }
+// Event watch callback for window resize events
+static int windowEventWatch(void* userdata, SDL_Event* event) {
+    StateMachine* state_machine = static_cast<StateMachine*>(userdata);
+    
+    if (event->type == SDL_WINDOWEVENT) {
+        if (event->window.event == SDL_WINDOWEVENT_RESIZED) {
+            int width = event->window.data1;
+            int height = event->window.data2;
+            state_machine->window_width = width;
+            state_machine->window_height = height;
+            state_machine->update_ui_scale();
+        }
+    }
+    
+    return 1;
+}
 
 /* SDL2 gets setup here and then we build our states */
 bool StateMachine::init() {
@@ -36,8 +52,9 @@ bool StateMachine::init() {
     
     /* Enable hardware acceleration for the renderer and allow integer scaling */
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    SDL_RenderSetLogicalSize(renderer, CANVAS_WIDTH, CANVAS_HEIGHT);
-    SDL_RenderSetIntegerScale(renderer, SDL_TRUE);
+
+    // Register event watch for window resize events
+    SDL_AddEventWatch(windowEventWatch, this);
 
     init_clay();
     init_states();
@@ -96,7 +113,7 @@ void StateMachine::init_clay() {
     // Initialize Clay
     Clay_Initialize(
         clay_arena,
-        { (float)CANVAS_WIDTH, (float)CANVAS_HEIGHT },
+        { (float)window_width, (float)window_height },
         { handleClayError }
     );
     Clay_SetMeasureTextFunction(measureText, fonts);

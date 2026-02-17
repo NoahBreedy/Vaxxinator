@@ -12,10 +12,10 @@ void MainMenu::render()
     SDL_SetRenderDrawColor(state_machine->renderer, 0, 0, 0, 255);
     SDL_RenderClear(state_machine->renderer);
 
-    // Keep Clay in sync with the window size each frame
+    // Keep Clay in sync with the current window size each frame
     Clay_SetLayoutDimensions((Clay_Dimensions){
-        (float)CANVAS_WIDTH,
-        (float)CANVAS_HEIGHT
+        (float)state_machine->window_width,
+        (float)state_machine->window_height
     });
 
     buildLayout();
@@ -37,12 +37,10 @@ void MainMenu::update() {
 
 void MainMenu::enter() {
     std::cout << "Entering " << STATE_NAME << std::endl;
-    // Clay is now initialized in StateMachine::init()
 }
 
 void MainMenu::exit() {
     std::cout << "Exiting " << STATE_NAME << std::endl;
-    // Clay cleanup is handled by StateMachine::~StateMachine()
 }
 
 void MainMenu::buildLayout()
@@ -55,6 +53,9 @@ void MainMenu::buildLayout()
     );
 
     Clay_BeginLayout();
+
+    const int base_title_size = 72;
+    int scaled_title_size = (int)(base_title_size * state_machine->ui_scale);
 
     CLAY(CLAY_ID("Screen"), {
         .layout = {                             // layout FIRST
@@ -72,7 +73,7 @@ void MainMenu::buildLayout()
         CLAY_TEXT(CLAY_STRING("Vaxxinator"), CLAY_TEXT_CONFIG({
             .textColor = { 220, 220, 255, 255 }, // textColor FIRST
             .fontId    = FONT_BODY,               // fontId SECOND
-            .fontSize  = 72                       // fontSize THIRD
+            .fontSize  = (uint16_t)scaled_title_size        // fontSize THIRD
         }));
     }
 

@@ -24,6 +24,10 @@ private:
     int elapsed_time;
     float scroll_speed;
     float line_spacing;
+    int last_window_width = 0;
+    int last_window_height = 0;
+    
+    void createTextTextures();
 };
 
 #endif /* __INTRO_SCREEN__ */
