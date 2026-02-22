@@ -7,6 +7,7 @@ MainMenu::MainMenu(StateMachine* machine): State(STATE_NAME, machine)
 {
 }
 
+
 // Callback function for button clicks
 void MainMenu::injectButtonClicked(Clay_ElementId elementId, Clay_PointerData pointerData, void *userData) {
     MainMenu* menu = (MainMenu*)userData;
@@ -17,18 +18,18 @@ void MainMenu::injectButtonClicked(Clay_ElementId elementId, Clay_PointerData po
 }
 
 void MainMenu::onSyringeClicked(Clay_ElementId elementId, Clay_PointerData pointerData, void *userData) {
-    int syringeIndex = (int)(uintptr_t)userData;
+    MainMenu* menu = ((SyringeData*)userData)->userData;
+    int i = ((SyringeData*)userData)->index;
 
     if (pointerData.state == CLAY_POINTER_DATA_RELEASED_THIS_FRAME) {
-        std::cout << "Syringe " << syringeIndex << " clicked!" << std::endl;
-
         nfdchar_t* filePath = openFileDialog();
 
         if (filePath) {
             std::cout << "Selected file: " << filePath << std::endl;
-            free(filePath); // Free the file path memory allocated by NF
+            menu->syringe_loaded[i] = true;
         } else {
             std::cout << "No file selected." << std::endl;
+            menu->syringe_loaded[i] = false;
         }
     }
 }
@@ -47,6 +48,40 @@ void MainMenu::render()
     buildLayout();
 
     Clay_SDL2_Render(state_machine->renderer, state_machine->clay_render_commands, state_machine->fonts);
+
+    // Pre-pass: draw syringe sprites into Clay bounding boxes
+    Clay_ElementId ids[4] = {
+        Clay_GetElementId(CLAY_STRING("Syringe_0")),
+        Clay_GetElementId(CLAY_STRING("Syringe_1")),
+        Clay_GetElementId(CLAY_STRING("Syringe_2")),
+        Clay_GetElementId(CLAY_STRING("Syringe_3"))
+    };
+
+    for (int i = 0; i < 4; i++) {
+        Clay_ElementData data = Clay_GetElementData(ids[i]);
+
+        if (data.found) {
+            Clay_BoundingBox bb = data.boundingBox;
+            SDL_Rect dst = {
+                (int)bb.x,
+                (int)bb.y,
+                (int)bb.width,
+                (int)bb.height
+            };
+
+            bool hovered = Clay_PointerOver(ids[i]);
+            bool loaded  = syringe_loaded[i];
+
+            const SDL_Rect* src;
+            if      ( loaded &&  hovered) src = &SYRINGE_FULL_HOVERED;
+            else if ( loaded && !hovered) src = &SYRINGE_FULL;
+            else if (!loaded &&  hovered) src = &SYRINGE_EMPTY_HOVERED;
+            else                          src = &SYRINGE_EMPTY;
+
+            SDL_RenderCopy(state_machine->renderer, syringe_sheet, src, &dst);
+        }
+    }
+
     SDL_RenderPresent(state_machine->renderer);
 }
 void MainMenu::update() {
@@ -57,16 +92,32 @@ void MainMenu::update() {
             state_machine->transition("GameState");
         }
     }
-
-    SDL_Delay(10);
 }
 
 void MainMenu::enter() {
     std::cout << "Entering " << STATE_NAME << std::endl;
+
+    syringe_data[0] = { 0, this };
+    syringe_data[1] = { 1, this };
+    syringe_data[2] = { 2, this };
+    syringe_data[3] = { 3, this };
+    
+    SDL_Surface* surface = IMG_Load("assets/sprites/robot_syringe_modified.png");
+    syringe_sheet = SDL_CreateTextureFromSurface(state_machine->renderer, surface);
+    if (!syringe_sheet) {
+        std::cerr << "Failed to load syringe texture: " << IMG_GetError() << std::endl;
+        return;
+    }
+    SDL_FreeSurface(surface);
 }
 
 void MainMenu::exit() {
     std::cout << "Exiting " << STATE_NAME << std::endl;
+
+    if (syringe_sheet) {
+        SDL_DestroyTexture(syringe_sheet);
+        syringe_sheet = nullptr;
+    }
 }
 
 void MainMenu::buildLayout()
@@ -82,6 +133,9 @@ void MainMenu::buildLayout()
 
     const int base_title_size = 72;
     int scaled_title_size = (int)(base_title_size * state_machine->ui_scale);
+
+    float scaled_syringe_width = (160 * state_machine->ui_scale);
+    float scaled_syringe_height = (400 * state_machine->ui_scale);
 
     CLAY(CLAY_ID("Screen"), {
         .layout = {
@@ -106,6 +160,15 @@ void MainMenu::buildLayout()
             .fontSize  = (uint16_t)scaled_title_size
         }));
 
+        CLAY(CLAY_ID("Spacer_0"), {
+            .layout = {
+                .sizing = {
+                    .width  = CLAY_SIZING_GROW(0),
+                    .height = CLAY_SIZING_GROW(0)
+                }
+            }
+        }) {}
+
         // Syringe row
         CLAY(CLAY_ID("SyringeRow"), {
             .layout = {
@@ -124,66 +187,58 @@ void MainMenu::buildLayout()
             CLAY(CLAY_ID("Syringe_0"), {
                 .layout = {
                     .sizing = {
-                        .width  = CLAY_SIZING_FIXED(80),
-                        .height = CLAY_SIZING_FIXED(200)
+                        .width  = CLAY_SIZING_FIXED(scaled_syringe_width),
+                        .height = CLAY_SIZING_FIXED(scaled_syringe_height)
                     }
                 },
-                .backgroundColor = Clay_Hovered()
-                    ? (Clay_Color){ 80, 80, 100, 255 }
-                    : (Clay_Color){ 50, 50, 70,  255 },
-                .cornerRadius = CLAY_CORNER_RADIUS(4)
+                .backgroundColor = { 0, 0, 0, 0 },
+                .cornerRadius = CLAY_CORNER_RADIUS(0)
             }) {
-                Clay_OnHover(onSyringeClicked, (void*)(uintptr_t)0);
+                Clay_OnHover(onSyringeClicked, (void*)&syringe_data[0]);
             }
 
             CLAY(CLAY_ID("Syringe_1"), {
                 .layout = {
                     .sizing = {
-                        .width  = CLAY_SIZING_FIXED(80),
-                        .height = CLAY_SIZING_FIXED(200)
+                        .width  = CLAY_SIZING_FIXED(scaled_syringe_width),
+                        .height = CLAY_SIZING_FIXED(scaled_syringe_height)
                     }
                 },
-                .backgroundColor = Clay_Hovered()
-                    ? (Clay_Color){ 80, 80, 100, 255 }
-                    : (Clay_Color){ 50, 50, 70,  255 },
-                .cornerRadius = CLAY_CORNER_RADIUS(4)
+                .backgroundColor = { 0, 0, 0, 0 },
+                .cornerRadius = CLAY_CORNER_RADIUS(0)
             }) {
-                Clay_OnHover(onSyringeClicked, (void*)(uintptr_t)1);
+                Clay_OnHover(onSyringeClicked, (void*)&syringe_data[1]);
             }
 
             CLAY(CLAY_ID("Syringe_2"), {
                 .layout = {
                     .sizing = {
-                        .width  = CLAY_SIZING_FIXED(80),
-                        .height = CLAY_SIZING_FIXED(200)
+                        .width  = CLAY_SIZING_FIXED(scaled_syringe_width),
+                        .height = CLAY_SIZING_FIXED(scaled_syringe_height)
                     }
                 },
-                .backgroundColor = Clay_Hovered()
-                    ? (Clay_Color){ 80, 80, 100, 255 }
-                    : (Clay_Color){ 50, 50, 70,  255 },
-                .cornerRadius = CLAY_CORNER_RADIUS(4)
+                .backgroundColor = { 0, 0, 0, 0 },
+                .cornerRadius = CLAY_CORNER_RADIUS(0)
             }) {
-                Clay_OnHover(onSyringeClicked, (void*)(uintptr_t)2);
+                Clay_OnHover(onSyringeClicked, (void*)&syringe_data[2]);
             }
 
             CLAY(CLAY_ID("Syringe_3"), {
                 .layout = {
                     .sizing = {
-                        .width  = CLAY_SIZING_FIXED(80),
-                        .height = CLAY_SIZING_FIXED(200)
+                        .width  = CLAY_SIZING_FIXED(scaled_syringe_width),
+                        .height = CLAY_SIZING_FIXED(scaled_syringe_height)
                     }
                 },
-                .backgroundColor = Clay_Hovered()
-                    ? (Clay_Color){ 80, 80, 100, 255 }
-                    : (Clay_Color){ 50, 50, 70,  255 },
-                .cornerRadius = CLAY_CORNER_RADIUS(4)
+                .backgroundColor = { 0, 0, 0, 0 },
+                .cornerRadius = CLAY_CORNER_RADIUS(0)
             }) {
-                Clay_OnHover(onSyringeClicked, (void*)(uintptr_t)3);
+                Clay_OnHover(onSyringeClicked, (void*)&syringe_data[3]);
             }
         }
 
         // Spacer to push button to bottom
-        CLAY(CLAY_ID("Spacer"), {
+        CLAY(CLAY_ID("Spacer_1"), {
             .layout = {
                 .sizing = {
                     .width  = CLAY_SIZING_GROW(0),

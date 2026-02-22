@@ -100,7 +100,7 @@ void StateMachine::transition(const std::string& state_name) {
 void StateMachine::init_clay() {
     // Load the font
     fonts[FONT_BODY].fontId = FONT_BODY;
-    fonts[FONT_BODY].font   = TTF_OpenFont("assets/fonts/News_Gothic_Bold.ttf", 48);
+    fonts[FONT_BODY].font   = TTF_OpenFont("assets/fonts/PressStart2P.ttf", 48);
     if (!fonts[FONT_BODY].font) {
         std::cerr << "TTF_OpenFont failed: " << TTF_GetError() << std::endl;
     }
