@@ -16,6 +16,7 @@ public:
 
 private:
     void buildLayout();
+    static void injectButtonClicked(Clay_ElementId elementId, Clay_PointerData pointerData, void *userData);
 };
 
 #endif /* __MAIN_MENU__ */

@@ -7,6 +7,15 @@ MainMenu::MainMenu(StateMachine* machine): State(STATE_NAME, machine)
 {
 }
 
+// Callback function for button clicks
+void MainMenu::injectButtonClicked(Clay_ElementId elementId, Clay_PointerData pointerData, void *userData) {
+    MainMenu* menu = (MainMenu*)userData;
+    
+    if (pointerData.state == CLAY_POINTER_DATA_RELEASED_THIS_FRAME) {
+        menu->state_machine->transition("GameState");
+    }
+}
+
 void MainMenu::render()
 {
     SDL_SetRenderDrawColor(state_machine->renderer, 0, 0, 0, 255);
@@ -58,23 +67,62 @@ void MainMenu::buildLayout()
     int scaled_title_size = (int)(base_title_size * state_machine->ui_scale);
 
     CLAY(CLAY_ID("Screen"), {
-        .layout = {                             // layout FIRST
+        .layout = {
             .sizing = {
                 .width  = CLAY_SIZING_GROW(0),
                 .height = CLAY_SIZING_GROW(0)
             },
             .childAlignment = {
                 .x = CLAY_ALIGN_X_CENTER,
-                .y = CLAY_ALIGN_Y_CENTER
-            }
+                .y = CLAY_ALIGN_Y_TOP
+            },
+            .layoutDirection = CLAY_TOP_TO_BOTTOM
         },
-        .backgroundColor = { 15, 15, 30, 255 } // backgroundColor SECOND
+        .backgroundColor = { 15, 15, 30, 255 }
     }) {
+        // Title at upper center
         CLAY_TEXT(CLAY_STRING("Vaxxinator"), CLAY_TEXT_CONFIG({
-            .textColor = { 220, 220, 255, 255 }, // textColor FIRST
-            .fontId    = FONT_BODY,               // fontId SECOND
-            .fontSize  = (uint16_t)scaled_title_size        // fontSize THIRD
+            .textColor = { 220, 220, 255, 255 },
+            .fontId    = FONT_BODY,
+            .fontSize  = (uint16_t)scaled_title_size
         }));
+
+        // Spacer to push button to bottom
+        CLAY(CLAY_ID("Spacer"), {
+            .layout = {
+                .sizing = {
+                    .width  = CLAY_SIZING_GROW(0),
+                    .height = CLAY_SIZING_GROW(0)  // grows to fill remaining space
+                }
+            }
+        }) {}
+
+        // Small inject button at bottom center
+        CLAY(CLAY_ID("Inject_Button"), {
+            .layout = {
+                .sizing = {
+                    .width  = CLAY_SIZING_FIT(0),
+                    .height = CLAY_SIZING_FIT(0)
+                },
+                .padding = { 12, 12, 6, 6 },        // horizontal, vertical padding
+                .childAlignment = {
+                    .x = CLAY_ALIGN_X_CENTER,
+                    .y = CLAY_ALIGN_Y_CENTER
+                }
+            },
+            .backgroundColor = Clay_Hovered()
+                ? (Clay_Color){ 100, 150, 255, 255 }
+                : (Clay_Color){  50, 100, 200, 255 },
+            .cornerRadius = CLAY_CORNER_RADIUS(5)
+        }) {
+            CLAY_TEXT(CLAY_STRING("Inject"), CLAY_TEXT_CONFIG({
+                .textColor = { 255, 255, 255, 255 },
+                .fontId    = FONT_BODY,
+                .fontSize  = (uint16_t)(scaled_title_size * 0.4f)  // smaller than title
+            }));
+
+            Clay_OnHover(injectButtonClicked, (void*)this);
+        }
     }
 
     state_machine->clay_render_commands = Clay_EndLayout();
