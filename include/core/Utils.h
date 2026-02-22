@@ -19,11 +19,16 @@ typedef struct RGBA {
     uint8_t b;
     uint8_t a;
 } RGBA;
+#include <cmath>
+#include <iostream>
+#include "nfd.hpp"
 
 void hsv_to_rgb(float h, float s, float v, uint8_t& r, uint8_t& g, uint8_t& b);
 
 float rand_float(float min, float max);
 
 double distance(int x1, int y1, int x2, int y2);
+
+nfdchar_t* openFileDialog();
 
 #endif /* __UTILS__ */

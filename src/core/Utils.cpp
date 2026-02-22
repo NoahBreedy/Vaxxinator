@@ -1,3 +1,4 @@
+#include "core/Utils.h"
 #include <cstdint>
 #include <cstdlib>
 #include <cmath>
@@ -20,6 +21,30 @@ void hsv_to_rgb(float h, float s, float v, uint8_t& r, uint8_t& g, uint8_t& b) {
     r = static_cast<uint8_t>((rf + m) * 255);
     g = static_cast<uint8_t>((gf + m) * 255);
     b = static_cast<uint8_t>((bf + m) * 255);
+}
+
+nfdchar_t* openFileDialog() {
+        NFD::Guard nfdGuard;
+
+        // auto-freeing memory
+        NFD::UniquePath outPath;
+
+        // prepare filters for the dialog
+        nfdfilteritem_t filterItem[2] = {{"Test", "txt"}, {"Binary", "bin"}};
+
+        nfdchar_t* filePath = nullptr;
+
+        // show the dialog
+        nfdresult_t result = NFD::OpenDialog(outPath, filterItem, 2);
+        if (result == NFD_OKAY) {
+            filePath = outPath.get();
+        } else if (result == NFD_CANCEL) {
+            std::cout << "User pressed cancel." << std::endl;
+        } else {
+            std::cout << "Error: " << NFD::GetError() << std::endl;
+        }
+
+    return filePath;
 }
 
 float rand_float(float min, float max) {

@@ -4,6 +4,7 @@
 #include "DefaultState.h"
 #include "clay/clay.h"
 #include "clay/clay_renderer_SDL2.h"
+#include "core/Utils.h"
 
 class MainMenu : public State {
 public:
@@ -17,6 +18,7 @@ public:
 private:
     void buildLayout();
     static void injectButtonClicked(Clay_ElementId elementId, Clay_PointerData pointerData, void *userData);
+    static void onSyringeClicked(Clay_ElementId elementId, Clay_PointerData pointerData, void *userData);
 };
 
 #endif /* __MAIN_MENU__ */

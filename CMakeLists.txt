@@ -75,6 +75,7 @@ target_link_libraries(${PROJECT_NAME}
     SDL2
     SDL2_ttf
     SDL2_image
+    nfd
 )
 
 # Copy assets folder next to the executable (needed later for when we include images)
