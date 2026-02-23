@@ -9,6 +9,7 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_gfx REQUIRED)
+find_package(nfd REQUIRED)
 
 include_directories(
    PUBLIC include/
@@ -16,6 +17,7 @@ include_directories(
    PUBLIC ${SDL2_TTF_INCLUDE_DIRS}
    PUBLIC ${SDL2_IMAGE_INCLUDE_DIRS}
    PUBLIC ${SDL2_GFX_INCLUDE_DIRS}
+   PUBLIC ${NFD_INCLUDE_DIRS}
 )
 
 # Get the proper libraries to link basesd on platform
