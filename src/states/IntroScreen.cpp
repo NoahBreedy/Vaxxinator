@@ -29,10 +29,6 @@ void IntroScreen::render() {
     SDL_GetRendererOutputSize(state_machine->renderer, &screen_width, &screen_height);
 
     float scaled_line_spacing = line_spacing * state_machine->ui_scale;
-    float scaled_scroll_speed = scroll_speed * std::sqrt(state_machine->ui_scale);
-
-    // Moves up scroll_speed pixles every second
-    float scroll_offset = (elapsed_time / 1000.0f) * scaled_scroll_speed;
 
     float base_hue = std::fmod(elapsed_time * 0.05f, 360.0f);
 
@@ -65,6 +61,10 @@ void IntroScreen::render() {
 }
 
 void IntroScreen::update() {
+    uint32_t now = SDL_GetTicks();
+    float delta_time = (now - last_tick) / 1000.0f;
+    last_tick = now;
+
     // Allow skipping intro with spacebar 
     if (state_machine->input_buffer.has_key()) {
         SDL_Keycode key = state_machine->input_buffer.pop_key();
@@ -74,31 +74,40 @@ void IntroScreen::update() {
         }
     }
 
+    // scroll speed control
+    scroll_scaler = state_machine->input_buffer.key_down(SDL_SCANCODE_LSHIFT) ? 20 : 1;
+
+    float scaled_scroll_speed = scroll_speed * std::sqrt(state_machine->ui_scale) * scroll_scaler;
+    scroll_offset += delta_time * scaled_scroll_speed;
+
     // Check if intro is complete
     if (!text_textures.empty()) {
         int screen_height;
         SDL_GetRendererOutputSize(state_machine->renderer, nullptr, &screen_height);
-        
-        float scroll_offset = (elapsed_time / 1000.0f) * scroll_speed;
-        
+
         size_t last_index = text_textures.size() - 1;
+
         int last_text_height;
         SDL_QueryTexture(text_textures[last_index], nullptr, nullptr, nullptr, &last_text_height);
-        
-        int last_y = screen_height - scroll_offset + (last_index * line_spacing);
-        
-        if (last_y + last_text_height < 0) {
+
+        float scaled_line_spacing = line_spacing * state_machine->ui_scale;
+
+        float total_text_height = (last_index * scaled_line_spacing) + last_text_height;
+
+        if (scroll_offset >= screen_height + total_text_height) {
             state_machine->transition("MainMenu");
         }
     }
 
     SDL_Delay(10);
-    elapsed_time += 10;
+    elapsed_time += delta_time * 1000.0f;
 }
 
 void IntroScreen::enter() {
     std::cout << "Entering " << STATE_NAME << std::endl;
-
+    
+    last_tick = SDL_GetTicks();
+    
     elapsed_time = 0;
     scroll_speed = 50.0f;
     line_spacing = 200.0f;
