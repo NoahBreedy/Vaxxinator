@@ -21,7 +21,7 @@ void MainMenu::onSyringeClicked(Clay_ElementId elementId, Clay_PointerData point
     MainMenu* menu = ((SyringeData*)userData)->userData;
     int i = ((SyringeData*)userData)->index;
 
-    if (pointerData.state == CLAY_POINTER_DATA_RELEASED_THIS_FRAME) {
+    if (pointerData.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME) {
         nfdchar_t* filePath = openFileDialog();
 
         if (filePath) {
