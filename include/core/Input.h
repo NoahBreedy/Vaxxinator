@@ -13,6 +13,7 @@ public:
     void clear_keys();
 
     bool key_down(SDL_Scancode sc) const;
+    const bool* getKeysDown() const { return keys_down; }
 
     bool quit_requested() const;
 
