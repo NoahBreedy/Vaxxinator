@@ -103,6 +103,9 @@ void GameState::enter() {
         CANVAS_HEIGHT
     );
 
+    SDL_RenderSetLogicalSize(state_machine->renderer, CANVAS_WIDTH, CANVAS_HEIGHT);
+    SDL_RenderSetIntegerScale(state_machine->renderer, SDL_TRUE);
+    
     frame_count = 0;
 
     cells.push_back(BloodCell(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 8, true, state_machine->renderer));
@@ -114,6 +117,8 @@ void GameState::enter() {
 
 void GameState::exit() {
     std::cout << "Exiting " << STATE_NAME << std::endl;
+
+    SDL_RenderSetLogicalSize(state_machine->renderer, state_machine->window_width, state_machine->window_height);
 
     open_simplex_noise_free(noise_ctx0);
     open_simplex_noise_free(noise_ctx1);

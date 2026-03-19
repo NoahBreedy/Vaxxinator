@@ -26,6 +26,10 @@ static int windowEventWatch(void* userdata, SDL_Event* event) {
             state_machine->window_width = width;
             state_machine->window_height = height;
             state_machine->update_ui_scale();
+
+            if(state_machine->current_state->getName() != "GameState") {
+                SDL_RenderSetLogicalSize(state_machine->renderer, width, height);
+            }
         }
     }
     
