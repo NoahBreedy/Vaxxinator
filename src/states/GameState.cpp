@@ -88,8 +88,6 @@ void GameState::update() {
 }
 
 void GameState::enter() {
-    std::cout << "Entering " << STATE_NAME << std::endl;
-
     std::srand(std::time(nullptr));
     open_simplex_noise(std::rand(),&noise_ctx0);
     open_simplex_noise(std::rand(),&noise_ctx1);
@@ -116,8 +114,6 @@ void GameState::enter() {
 }
 
 void GameState::exit() {
-    std::cout << "Exiting " << STATE_NAME << std::endl;
-
     SDL_RenderSetLogicalSize(state_machine->renderer, state_machine->window_width, state_machine->window_height);
 
     open_simplex_noise_free(noise_ctx0);

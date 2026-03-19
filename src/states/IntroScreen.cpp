@@ -104,8 +104,6 @@ void IntroScreen::update() {
 }
 
 void IntroScreen::enter() {
-    std::cout << "Entering " << STATE_NAME << std::endl;
-    
     last_tick = SDL_GetTicks();
     
     elapsed_time = 0;
@@ -118,7 +116,6 @@ void IntroScreen::enter() {
 }
 
 void IntroScreen::exit() {
-    std::cout << "Exiting " << STATE_NAME << std::endl;
     if (font != nullptr) {
         TTF_CloseFont(font);
         font = nullptr;

@@ -95,8 +95,6 @@ void MainMenu::update() {
 }
 
 void MainMenu::enter() {
-    std::cout << "Entering " << STATE_NAME << std::endl;
-
     syringe_data[0] = { 0, this };
     syringe_data[1] = { 1, this };
     syringe_data[2] = { 2, this };
@@ -112,8 +110,6 @@ void MainMenu::enter() {
 }
 
 void MainMenu::exit() {
-    std::cout << "Exiting " << STATE_NAME << std::endl;
-
     if (syringe_sheet) {
         SDL_DestroyTexture(syringe_sheet);
         syringe_sheet = nullptr;
