@@ -48,6 +48,9 @@ public:
     int window_height = CANVAS_HEIGHT;
     float ui_scale = BASE_SCALE;
 
+    int PLAYER_COUNT;
+    std::string  syringe_paths[4];
+
     void update_ui_scale() { ui_scale = (window_width * BASE_SCALE) / (float)CANVAS_WIDTH; }
 
 private:

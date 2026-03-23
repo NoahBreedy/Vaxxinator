@@ -1,6 +1,7 @@
 #ifndef __MAIN_MENU__
 #define __MAIN_MENU__
 
+#include <string>
 #include <SDL2/SDL_image.h>
 #include "DefaultState.h"
 #include "clay/clay.h"

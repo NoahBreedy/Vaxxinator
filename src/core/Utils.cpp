@@ -30,12 +30,12 @@ nfdchar_t* openFileDialog() {
         NFD::UniquePath outPath;
 
         // prepare filters for the dialog
-        nfdfilteritem_t filterItem[2] = {{"Test", "txt"}, {"Binary", "bin"}};
+        nfdfilteritem_t filterItem[1] = {{"Binary", "bin"}};
 
         nfdchar_t* filePath = nullptr;
 
         // show the dialog
-        nfdresult_t result = NFD::OpenDialog(outPath, filterItem, 2);
+        nfdresult_t result = NFD::OpenDialog(outPath, filterItem, 1);
         if (result == NFD_OKAY) {
             filePath = outPath.get();
         } else if (result == NFD_CANCEL) {

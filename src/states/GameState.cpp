@@ -92,6 +92,12 @@ void GameState::enter() {
     open_simplex_noise(std::rand(),&noise_ctx0);
     open_simplex_noise(std::rand(),&noise_ctx1);
     
+    for(int i = 0; i < 4; i++) {
+        if(state_machine->syringe_paths[i] != ""){
+            std::cout << state_machine->syringe_paths[i] << std::endl;
+        }
+    }
+
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
     background_texture = SDL_CreateTexture(
         state_machine->renderer,

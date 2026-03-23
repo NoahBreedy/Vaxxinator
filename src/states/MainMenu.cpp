@@ -25,11 +25,12 @@ void MainMenu::onSyringeClicked(Clay_ElementId elementId, Clay_PointerData point
         nfdchar_t* filePath = openFileDialog();
 
         if (filePath) {
-            std::cout << "Selected file: " << filePath << std::endl;
             menu->syringe_loaded[i] = true;
+            menu->state_machine->syringe_paths[i] = std::string(filePath);
         } else {
             std::cout << "No file selected." << std::endl;
             menu->syringe_loaded[i] = false;
+            menu->state_machine->syringe_paths[i] = std::string("");
         }
     }
 }
@@ -110,6 +111,14 @@ void MainMenu::enter() {
 }
 
 void MainMenu::exit() {
+    state_machine->PLAYER_COUNT = 0;
+
+    for (int i = 0; i < 4; i++){
+        if(syringe_loaded[i]) {
+            state_machine->PLAYER_COUNT++;
+        }
+    }
+
     if (syringe_sheet) {
         SDL_DestroyTexture(syringe_sheet);
         syringe_sheet = nullptr;
