@@ -18,7 +18,9 @@ Animation::Animation(SDL_Renderer* renderer,
         std::cerr << "IMG_Load failed (" << pngPath << "): " << IMG_GetError() << "\n";
         return;
     }
-
+    /* TODO addd color where we change the color white to specific color based on
+       vaxxxine entry 
+    */
     texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 

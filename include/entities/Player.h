@@ -3,18 +3,20 @@
 
 #include <SDL2/SDL.h>
 #include <memory>
+#include <string>
+#include "core/teenyat.h"
 
 class Sprite;
 
 enum class PlayerDirection {
-    UP = 0,
-    UP_RIGHT = 1,
-    RIGHT = 2,
-    DOWN_RIGHT = 3,
-    DOWN = 4,
-    DOWN_LEFT = 5,
-    LEFT = 6,
-    UP_LEFT = 7,
+    DOWN = 0,
+    DOWN_LEFT = 1,
+    LEFT = 2,
+    UP_LEFT = 3,
+    UP = 4,
+    UP_RIGHT = 5,
+    RIGHT = 6,
+    DOWN_RIGHT = 7,
     NONE = 8
 };
 
@@ -25,7 +27,7 @@ enum class PlayerState {
 
 class Player {
 public:
-    explicit Player(int startX, int startY, SDL_Renderer* renderer);
+    explicit Player(int startX, int startY, SDL_Renderer* renderer, std::string bin_path);
     ~Player() = default;
 
     void update(const bool* keys);
@@ -35,14 +37,20 @@ public:
     int getX() const { return x; }
     int getY() const { return y; }
 
+    void init_player_cpu(TNY_READ_FROM_BUS_FNPTR bus_read, TNY_WRITE_TO_BUS_FNPTR bus_write);
+
 private:
-    std::unique_ptr<Sprite> sprite;
+    Sprite* sprite;
     
     int x;
     int y;
     static constexpr float MOVE_SPEED = 3.0f;
     float velocityX = 0.0f;
     float velocityY = 0.0f;
+
+    FILE* bin_file;
+
+    teenyat cpu;
 
     PlayerState state = PlayerState::IDLE;
     PlayerDirection direction = PlayerDirection::DOWN;

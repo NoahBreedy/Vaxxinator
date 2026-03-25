@@ -4,52 +4,65 @@
 #include <cmath>
 #include <SDL2/SDL.h>
 
-Player::Player(int startX, int startY, SDL_Renderer* renderer)
+Player::Player(int startX, int startY, SDL_Renderer* renderer, std::string bin_path)
     : x(startX), y(startY) {
-    sprite = std::make_unique<Sprite>(renderer);
-    sprite->setScale(2);
+    sprite = new Sprite(renderer);
+    sprite->setScale(1);
     sprite->setPosition(x, y);
-    
     setupAnimations(renderer);
+
+    bin_file = fopen(bin_path.c_str(), "rb");
+
+    if(!bin_file) {
+        std::cout << "Failed to load binary file: " << bin_path << std::endl;
+        std::exit(EXIT_FAILURE);
+    }
+}
+
+void Player::init_player_cpu(TNY_READ_FROM_BUS_FNPTR bus_read, TNY_WRITE_TO_BUS_FNPTR bus_write) {
+    tny_init_from_file(&cpu, bin_file, bus_read, bus_write);
+    cpu.ex_data = this;
 }
 
 void Player::setupAnimations(SDL_Renderer* renderer) {
-    const int FRAME_W = 48;
-    const int FRAME_H = 64;
+    const int FRAME_W = 19;
+    const int FRAME_H = 29;
     
     /* idle */
-    sprite->addAnimation("idle_down", "assets/sprites/adventurer/Idle/idle_down.png", 
-                                      FRAME_W, FRAME_H, 5, 4, true);
-    sprite->addAnimation("idle_up", "assets/sprites/adventurer/Idle/idle_up.png", 
-                                    FRAME_W, FRAME_H, 5, 4, true);
-    sprite->addAnimation("idle_right_up", "assets/sprites/adventurer/Idle/idle_right_up.png", 
-                                          FRAME_W, FRAME_H, 5, 4, true);
-    sprite->addAnimation("idle_right_down", "assets/sprites/adventurer/Idle/idle_right_down.png", 
-                                            FRAME_W, FRAME_H, 5, 4, true);
-    sprite->addAnimation("idle_left_up", "assets/sprites/adventurer/Idle/idle_left_up.png", 
-                                         FRAME_W, FRAME_H, 5, 4, true);
-    sprite->addAnimation("idle_left_down", "assets/sprites/adventurer/Idle/idle_left_down.png", 
-                                           FRAME_W, FRAME_H, 5, 4, true);
+    sprite->addAnimation("idle_down", "assets/sprites/adventurer/Idle/standing-0.png", 
+                                      FRAME_W, FRAME_H, 5, 1, true);
+    sprite->addAnimation("idle_up", "assets/sprites/adventurer/Idle/standing-4.png", 
+                                    FRAME_W, FRAME_H, 5, 1, true);
+    sprite->addAnimation("idle_right_up", "assets/sprites/adventurer/Idle/standing-5.png", 
+                                          FRAME_W, FRAME_H, 5, 1, true);
+    sprite->addAnimation("idle_right_down", "assets/sprites/adventurer/Idle/standing-7.png", 
+                                            FRAME_W, FRAME_H, 5, 1, true);
+    sprite->addAnimation("idle_left_up", "assets/sprites/adventurer/Idle/standing-3.png", 
+                                         FRAME_W, FRAME_H, 5, 1, true);
+    sprite->addAnimation("idle_left_down", "assets/sprites/adventurer/Idle/standing-1.png", 
+                                           FRAME_W, FRAME_H, 5, 1, true);
 
     /* walk */
-    sprite->addAnimation("walk_down", "assets/sprites/adventurer/Walk/walk_down.png", 
-                                      FRAME_W, FRAME_H, 5, 8, true);
-    sprite->addAnimation("walk_up", "assets/sprites/adventurer/Walk/walk_up.png", 
-                                    FRAME_W, FRAME_H, 5, 8, true);
-    sprite->addAnimation("walk_right_up", "assets/sprites/adventurer/Walk/walk_right_up.png", 
-                                          FRAME_W, FRAME_H, 5, 8, true);
-    sprite->addAnimation("walk_right_down", "assets/sprites/adventurer/Walk/walk_right_down.png", 
-                                            FRAME_W, FRAME_H, 5, 8, true);
-    sprite->addAnimation("walk_left_up", "assets/sprites/adventurer/Walk/walk_left_up.png", 
-                                         FRAME_W, FRAME_H, 5, 8, true);
-    sprite->addAnimation("walk_left_down", "assets/sprites/adventurer/Walk/walk_left_down.png", 
-                                           FRAME_W, FRAME_H, 5, 8, true);
+    sprite->addAnimation("walk_down", "assets/sprites/adventurer/Walk/running_0.png", 
+                                      FRAME_W, FRAME_H, 4, 4, true);
+    sprite->addAnimation("walk_up", "assets/sprites/adventurer/Walk/running_4.png", 
+                                    FRAME_W, FRAME_H, 4, 4, true);
+    sprite->addAnimation("walk_right_up", "assets/sprites/adventurer/Walk/running_5.png", 
+                                          FRAME_W, FRAME_H, 4, 4, true);
+    sprite->addAnimation("walk_right_down", "assets/sprites/adventurer/Walk/running_7.png", 
+                                            FRAME_W, FRAME_H, 4, 4, true);
+    sprite->addAnimation("walk_left_up", "assets/sprites/adventurer/Walk/running_3.png", 
+                                         FRAME_W, FRAME_H, 4, 4, true);
+    sprite->addAnimation("walk_left_down", "assets/sprites/adventurer/Walk/running_1.png", 
+                                           FRAME_W, FRAME_H, 4, 4, true);
 
     /* base */
     sprite->setBaseAnimation("idle_down", true);
 }
 
 void Player::update(const bool* keys) {
+    tny_clock(&cpu); // clock the cpu
+
     updateMovement(keys);
     updateAnimation();
     

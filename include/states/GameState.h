@@ -7,7 +7,12 @@
 #include "DefaultState.h"
 #include "core/open-simplex-noise.h"
 #include "entities/BloodCell.h"
+#include "entities/Player.h"
+#include "core/teenyat.h"
 
+/* TeenyAT MMIO Ports */
+#define PLAYER_DIR 0x9000
+ 
 class GameState : public State {
 public:
     explicit GameState(StateMachine* machine);
@@ -16,6 +21,10 @@ public:
     void update() override;
     void enter()  override;
     void exit()   override;
+
+    /* The teenyAT bus read and bus write functions */
+    static void bus_read(teenyat *t, tny_uword addr, tny_word *data, uint16_t *delay);
+    static void bus_write(teenyat *t, tny_uword addr, tny_word data, uint16_t *delay);
 
 private:
     /* This stuff is boiler plate needed for getting 
@@ -35,6 +44,8 @@ private:
     uint64_t frame_count;
 
     std::vector<BloodCell> cells;
+    std::vector<Player> players;
+
 };
 
 #endif /* __GAME_STATE__ */

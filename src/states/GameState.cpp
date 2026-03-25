@@ -66,6 +66,11 @@ void GameState::render() {
     for(BloodCell cell : cells) {
         cell.render(state_machine->renderer);
     }
+    
+    for(Player player : players) {
+        player.render();
+    }
+
 }
 
 void GameState::update() {
@@ -82,6 +87,10 @@ void GameState::update() {
     for(int i = 0; i < cells.size(); i++) {
         cells[i].update();
     }
+    
+    for(int i = 0; i < players.size(); i++) {
+        players[i].update(state_machine->input_buffer.getKeysDown());
+    }
 
     SDL_RenderPresent(state_machine->renderer);
     SDL_Delay(10);
@@ -92,9 +101,13 @@ void GameState::enter() {
     open_simplex_noise(std::rand(),&noise_ctx0);
     open_simplex_noise(std::rand(),&noise_ctx1);
     
+    /* create vector of players with the associated binary files 
+    *  and then init their cpu
+    */
     for(int i = 0; i < 4; i++) {
         if(state_machine->syringe_paths[i] != ""){
-            std::cout << state_machine->syringe_paths[i] << std::endl;
+            players.push_back(Player(std::rand() % CANVAS_WIDTH, std::rand() % CANVAS_HEIGHT, state_machine->renderer, state_machine->syringe_paths[i]));
+            players[i].init_player_cpu(GameState::bus_read, GameState::bus_write);
         }
     }
 
@@ -128,5 +141,22 @@ void GameState::exit() {
     pixels = nullptr;
 
     cells.clear();
+    players.clear();
 
+}
+
+/* TeenyAT Bus Read and Bus Write functions */
+void GameState::bus_read(teenyat *t, tny_uword addr, tny_word *data, uint16_t *delay) {
+
+}
+
+void GameState::bus_write(teenyat *t, tny_uword addr, tny_word data, uint16_t *delay) {
+    Player* player = (Player*)t->ex_data;
+    switch(addr) {
+        case PLAYER_DIR:
+            std::cout << "Player Dir: " << player->getX() << " " << player->getY() << std::endl;
+            break;
+        default:
+            break;
+    }
 }
