@@ -55,6 +55,7 @@ add_executable(${PROJECT_NAME}
     src/core/Input.cpp
     src/core/StateMachine.cpp
     src/core/Utils.cpp
+    src/core/teenyat.c
     src/core/open-simplex-noise.c
     src/graphics/Animation.cpp
     src/graphics/Sprite.cpp
