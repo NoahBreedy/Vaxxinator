@@ -20,7 +20,10 @@ Player::Player(int startX, int startY, SDL_Renderer* renderer, std::string bin_p
 }
 
 void Player::init_player_cpu(TNY_READ_FROM_BUS_FNPTR bus_read, TNY_WRITE_TO_BUS_FNPTR bus_write) {
-    tny_init_from_file(&cpu, bin_file, bus_read, bus_write);
+    bool valid = tny_init_from_file(&cpu, bin_file, bus_read, bus_write);
+    if(!valid) {
+        std::cout << "Failed to init teenyAT: " << std::endl;
+    }
     cpu.ex_data = this;
 }
 
@@ -60,10 +63,10 @@ void Player::setupAnimations(SDL_Renderer* renderer) {
     sprite->setBaseAnimation("idle_down", true);
 }
 
-void Player::update(const bool* keys) {
+void Player::update() {
     tny_clock(&cpu); // clock the cpu
 
-    updateMovement(keys);
+    updateMovement();
     updateAnimation();
     
     x += velocityX;
@@ -73,34 +76,51 @@ void Player::update(const bool* keys) {
     sprite->update();
 }
 
-void Player::updateMovement(const bool* keys) {
+void Player::updateMovement() {
     float newVelX = 0.0f;
     float newVelY = 0.0f;
     
-    if (keys[SDL_SCANCODE_UP]) {
-        newVelY -= MOVE_SPEED;
+    if(is_moving) {
+        state = PlayerState::WALKING;
+        switch (moving_direction) {
+            case PlayerDirection::UP:
+                newVelY -= MOVE_SPEED;
+                break;
+            case PlayerDirection::DOWN:
+                newVelY += MOVE_SPEED;
+                break;
+            case PlayerDirection::LEFT:
+                newVelX -= MOVE_SPEED;
+                break;
+            case PlayerDirection::RIGHT:
+                newVelX += MOVE_SPEED;
+                break;
+            case PlayerDirection::UP_LEFT:
+                newVelY -= MOVE_SPEED;
+                newVelX -= MOVE_SPEED;
+                break;
+            case PlayerDirection::UP_RIGHT:
+                newVelY -= MOVE_SPEED;
+                newVelX += MOVE_SPEED;
+                break;
+            case PlayerDirection::DOWN_LEFT:
+                newVelY += MOVE_SPEED;
+                newVelX -= MOVE_SPEED;
+                break;
+            case PlayerDirection::DOWN_RIGHT:
+                newVelY += MOVE_SPEED;
+                newVelX += MOVE_SPEED;
+                break;
+            default:
+                std::cout << "FATAL ERROR COMPUTER VIRUS!!!" << std::endl;
+        }
+    }else {
+        state = PlayerState::IDLE;
     }
-    if (keys[SDL_SCANCODE_DOWN]) {
-        newVelY += MOVE_SPEED;
-    }
-    if (keys[SDL_SCANCODE_LEFT]) {
-        newVelX -= MOVE_SPEED;
-    }
-    if (keys[SDL_SCANCODE_RIGHT]) {
-        newVelX += MOVE_SPEED;
-    }
-    
+ 
     velocityX = newVelX;
     velocityY = newVelY;
-    
-    if (std::abs(velocityX) > 0.1f || std::abs(velocityY) > 0.1f) {
-        lastDirection = getDirectionFromVelocity();
-        direction = lastDirection;
-        state = PlayerState::WALKING;
-    } else {
-        state = PlayerState::IDLE;
-        direction = lastDirection;
-    }
+
 }
 
 void Player::updateAnimation() {
@@ -112,10 +132,28 @@ void Player::updateAnimation() {
         baseName = "idle";
     }
     
-    std::string animName = getAnimationName(baseName, direction);
+    std::string animName = getAnimationName(baseName, shooting_direction);
     if (sprite->currentAnimationName() != animName && !sprite->isActionPlaying()) {
         sprite->setBaseAnimation(animName, false);
     }
+}
+
+void Player::setShooting(PlayerDirection dir) {
+    if((tny_uword)dir == 0){
+        is_shooting = false;
+        return;
+    }
+    shooting_direction = dir;
+    is_shooting = true;
+}
+
+void Player::setMoving(PlayerDirection dir) {
+    if((tny_uword)dir == 0){
+        is_moving = false;
+        return;
+    }
+    moving_direction = dir;
+    is_moving = true;
 }
 
 PlayerDirection Player::getDirectionFromVelocity() const {

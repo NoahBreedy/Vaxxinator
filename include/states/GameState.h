@@ -11,7 +11,8 @@
 #include "core/teenyat.h"
 
 /* TeenyAT MMIO Ports */
-#define PLAYER_DIR 0x9000
+#define SHOOT_DIR 0x9000
+#define MOVE_DIR  0x9001
  
 class GameState : public State {
 public:

@@ -9,15 +9,15 @@
 class Sprite;
 
 enum class PlayerDirection {
-    DOWN = 0,
-    DOWN_LEFT = 1,
-    LEFT = 2,
-    UP_LEFT = 3,
-    UP = 4,
-    UP_RIGHT = 5,
-    RIGHT = 6,
-    DOWN_RIGHT = 7,
-    NONE = 8
+    NONE,
+    DOWN,
+    DOWN_LEFT,
+    LEFT,
+    UP_LEFT,
+    UP,
+    UP_RIGHT,
+    RIGHT,
+    DOWN_RIGHT,
 };
 
 enum class PlayerState {
@@ -30,10 +30,18 @@ public:
     explicit Player(int startX, int startY, SDL_Renderer* renderer, std::string bin_path);
     ~Player() = default;
 
-    void update(const bool* keys);
+    void update();
     void render();
 
     void setPosition(int px, int py);
+
+    PlayerDirection getShooting() const { return shooting_direction; }
+    void setShooting(PlayerDirection dir);
+
+    PlayerDirection getMoving() const { return moving_direction; }
+    void setMoving(PlayerDirection dir);
+
+
     int getX() const { return x; }
     int getY() const { return y; }
 
@@ -48,17 +56,20 @@ private:
     float velocityX = 0.0f;
     float velocityY = 0.0f;
 
+    bool is_shooting = false;
+    bool is_moving = false;
+
     FILE* bin_file;
 
     teenyat cpu;
 
     PlayerState state = PlayerState::IDLE;
-    PlayerDirection direction = PlayerDirection::DOWN;
-    PlayerDirection lastDirection = PlayerDirection::DOWN;
+    PlayerDirection shooting_direction = PlayerDirection::DOWN;
+    PlayerDirection moving_direction   = PlayerDirection::DOWN;
 
     void setupAnimations(SDL_Renderer* renderer);
     
-    void updateMovement(const bool* keys);
+    void updateMovement();
     void updateAnimation();
 
     std::string getAnimationName(const std::string& base, PlayerDirection dir) const;

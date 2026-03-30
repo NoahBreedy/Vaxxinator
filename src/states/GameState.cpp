@@ -89,7 +89,7 @@ void GameState::update() {
     }
     
     for(int i = 0; i < players.size(); i++) {
-        players[i].update(state_machine->input_buffer.getKeysDown());
+        players[i].update();
     }
 
     SDL_RenderPresent(state_machine->renderer);
@@ -104,10 +104,12 @@ void GameState::enter() {
     /* create vector of players with the associated binary files 
     *  and then init their cpu
     */
-    for(int i = 0; i < 4; i++) {
+    int index = 0;
+    for(int i = 0; i < 4; i++) { 
         if(state_machine->syringe_paths[i] != ""){
             players.push_back(Player(std::rand() % CANVAS_WIDTH, std::rand() % CANVAS_HEIGHT, state_machine->renderer, state_machine->syringe_paths[i]));
-            players[i].init_player_cpu(GameState::bus_read, GameState::bus_write);
+            players[index].init_player_cpu(GameState::bus_read, GameState::bus_write);
+            index++;
         }
     }
 
@@ -147,14 +149,27 @@ void GameState::exit() {
 
 /* TeenyAT Bus Read and Bus Write functions */
 void GameState::bus_read(teenyat *t, tny_uword addr, tny_word *data, uint16_t *delay) {
-
+    Player* player = (Player*)t->ex_data;
+    switch(addr) {
+        case SHOOT_DIR:
+            data->u = (tny_uword)player->getShooting();
+            break;
+        case MOVE_DIR:
+            data->u = (tny_uword)player->getMoving();
+            break;
+        default:
+            break;
+    }
 }
 
 void GameState::bus_write(teenyat *t, tny_uword addr, tny_word data, uint16_t *delay) {
     Player* player = (Player*)t->ex_data;
     switch(addr) {
-        case PLAYER_DIR:
-            std::cout << "Player Dir: " << player->getX() << " " << player->getY() << std::endl;
+        case SHOOT_DIR:
+            player->setShooting((PlayerDirection)data.u);
+            break;
+        case MOVE_DIR:
+            player->setMoving((PlayerDirection)data.u);
             break;
         default:
             break;
