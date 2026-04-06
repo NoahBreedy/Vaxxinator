@@ -42,11 +42,14 @@ public:
     PlayerDirection getMoving() const { return moving_direction; }
     void setMoving(PlayerDirection dir);
 
+    void wrapPosition(int canvasWidth, int canvasHeight);
 
     int getX() const { return x; }
     int getY() const { return y; }
 
     void init_player_cpu(TNY_READ_FROM_BUS_FNPTR bus_read, TNY_WRITE_TO_BUS_FNPTR bus_write);
+    
+    void getBulletSpawnPos(int& spawnX, int& spawnY) const;
 
 private:
     Sprite* sprite;

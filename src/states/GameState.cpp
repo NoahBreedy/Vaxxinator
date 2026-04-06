@@ -96,6 +96,11 @@ void GameState::update() {
         players[i].update();
     }
     
+    // Wrap player positions around screen
+    for(int i = 0; i < players.size(); i++) {
+        players[i].wrapPosition(CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
+    
     // Spawn bullets from shooting players every BULLET_SPAWN_RATE cycles
     if (frame_count % BULLET_SPAWN_RATE == 0) {
         for(Player& player : players) {
@@ -141,7 +146,9 @@ void GameState::update() {
                         dirY = 1.0f;
                 }
                 
-                bullets.push_back(Bullet(player.getX(), player.getY(), dirX, dirY));
+                int spawnX, spawnY;
+                player.getBulletSpawnPos(spawnX, spawnY);
+                bullets.push_back(Bullet(spawnX, spawnY, dirX, dirY));
             }
         }
     }

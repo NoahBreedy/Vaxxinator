@@ -102,3 +102,14 @@ void Sprite::render() {
         std::cerr << "SDL_RenderCopyEx failed: " << SDL_GetError() << "\n";
     }
 }
+
+int Sprite::getFrameWidth() const {
+    if (!current) return 0;
+    return current->getFrameW();
+}
+
+int Sprite::getFrameHeight() const {
+    if (!current) return 0;
+    return current->getFrameH();
+}
+

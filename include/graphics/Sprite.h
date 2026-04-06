@@ -14,6 +14,12 @@ public:
     void setPosition(int px, int py) { x = px; y = py; }
     void setScale(int s) { scale = (s <= 0 ? 1 : s); }
     void setFlipX(bool flip) { flipX = flip; }
+    
+    int getX() const { return x; }
+    int getY() const { return y; }
+    int getScale() const { return scale; }
+    int getFrameWidth() const;
+    int getFrameHeight() const;
 
     // Add animations by file path
     void addAnimation(const std::string& name,

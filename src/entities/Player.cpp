@@ -214,6 +214,34 @@ void Player::setPosition(int px, int py) {
     sprite->setPosition(x, y);
 }
 
+void Player::wrapPosition(int canvasWidth, int canvasHeight) {
+    // Wrap X coordinate
+    if (x < 0) {
+        x = canvasWidth + (x % canvasWidth);
+    } else if (x >= canvasWidth) {
+        x = x % canvasWidth;
+    }
+    
+    // Wrap Y coordinate
+    if (y < 0) {
+        y = canvasHeight + (y % canvasHeight);
+    } else if (y >= canvasHeight) {
+        y = y % canvasHeight;
+    }
+    
+    sprite->setPosition(x, y);
+}
+
+void Player::getBulletSpawnPos(int& spawnX, int& spawnY) const {
+    // Get the center of the sprite
+    int frameWidth = sprite->getFrameWidth();
+    int frameHeight = sprite->getFrameHeight();
+    int scale = sprite->getScale();
+    
+    spawnX = x + (frameWidth * scale) / 2;
+    spawnY = y + (frameHeight * scale) / 2;
+}
+
 void Player::render() {
     sprite->render();
 }
