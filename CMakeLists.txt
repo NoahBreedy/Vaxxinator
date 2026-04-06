@@ -65,6 +65,7 @@ add_executable(${PROJECT_NAME}
     src/states/DemoState.cpp
     src/entities/BloodCell.cpp
     src/entities/Player.cpp
+    src/entities/Bullet.cpp
     src/clay/clay_renderer_SDL2.c
 )
 

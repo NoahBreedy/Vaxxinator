@@ -8,6 +8,7 @@
 #include "core/open-simplex-noise.h"
 #include "entities/BloodCell.h"
 #include "entities/Player.h"
+#include "entities/Bullet.h"
 #include "core/teenyat.h"
 
 /* TeenyAT MMIO Ports */
@@ -46,6 +47,9 @@ private:
 
     std::vector<BloodCell> cells;
     std::vector<Player> players;
+    std::vector<Bullet> bullets;
+    
+    static constexpr int BULLET_SPAWN_RATE = 5; // Spawn bullet every X cycles
 
 };
 

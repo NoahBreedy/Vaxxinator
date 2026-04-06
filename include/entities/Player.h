@@ -36,6 +36,7 @@ public:
     void setPosition(int px, int py);
 
     PlayerDirection getShooting() const { return shooting_direction; }
+    bool isShooting() const { return is_shooting; }
     void setShooting(PlayerDirection dir);
 
     PlayerDirection getMoving() const { return moving_direction; }

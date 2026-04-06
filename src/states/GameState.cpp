@@ -70,6 +70,10 @@ void GameState::render() {
     for(Player player : players) {
         player.render();
     }
+    
+    for(Bullet& bullet : bullets) {
+        bullet.render(state_machine->renderer);
+    }
 
 }
 
@@ -90,6 +94,68 @@ void GameState::update() {
     
     for(int i = 0; i < players.size(); i++) {
         players[i].update();
+    }
+    
+    // Spawn bullets from shooting players every BULLET_SPAWN_RATE cycles
+    if (frame_count % BULLET_SPAWN_RATE == 0) {
+        for(Player& player : players) {
+            if(player.isShooting()) {
+                PlayerDirection shootDir = player.getShooting();
+                
+                float dirX = 0.0f, dirY = 0.0f;
+                switch(shootDir) {
+                    case PlayerDirection::UP:
+                        dirX = 0.0f;
+                        dirY = -1.0f;
+                        break;
+                    case PlayerDirection::DOWN:
+                        dirX = 0.0f;
+                        dirY = 1.0f;
+                        break;
+                    case PlayerDirection::LEFT:
+                        dirX = -1.0f;
+                        dirY = 0.0f;
+                        break;
+                    case PlayerDirection::RIGHT:
+                        dirX = 1.0f;
+                        dirY = 0.0f;
+                        break;
+                    case PlayerDirection::UP_LEFT:
+                        dirX = -0.707f;
+                        dirY = -0.707f;
+                        break;
+                    case PlayerDirection::UP_RIGHT:
+                        dirX = 0.707f;
+                        dirY = -0.707f;
+                        break;
+                    case PlayerDirection::DOWN_LEFT:
+                        dirX = -0.707f;
+                        dirY = 0.707f;
+                        break;
+                    case PlayerDirection::DOWN_RIGHT:
+                        dirX = 0.707f;
+                        dirY = 0.707f;
+                        break;
+                    default:
+                        dirX = 0.0f;
+                        dirY = 1.0f;
+                }
+                
+                bullets.push_back(Bullet(player.getX(), player.getY(), dirX, dirY));
+            }
+        }
+    }
+    
+    // Update all bullets
+    for(int i = 0; i < bullets.size(); i++) {
+        bullets[i].update();
+    }
+    
+    // Remove out of bounds bullets
+    for(int i = bullets.size() - 1; i >= 0; i--) {
+        if(bullets[i].isOutOfBounds(CANVAS_WIDTH, CANVAS_HEIGHT)) {
+            bullets.erase(bullets.begin() + i);
+        }
     }
 
     SDL_RenderPresent(state_machine->renderer);
@@ -144,6 +210,7 @@ void GameState::exit() {
 
     cells.clear();
     players.clear();
+    bullets.clear();
 
 }
 
