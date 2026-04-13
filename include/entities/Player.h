@@ -7,6 +7,7 @@
 #include "core/teenyat.h"
 
 class Sprite;
+class GameState;
 
 enum class PlayerDirection {
     NONE,
@@ -47,9 +48,11 @@ public:
     int getX() const { return x; }
     int getY() const { return y; }
 
-    void init_player_cpu(TNY_READ_FROM_BUS_FNPTR bus_read, TNY_WRITE_TO_BUS_FNPTR bus_write);
+    void init_player_cpu(TNY_READ_FROM_BUS_FNPTR bus_read, TNY_WRITE_TO_BUS_FNPTR bus_write, class GameState* game_state);
     
     void getBulletSpawnPos(int& spawnX, int& spawnY) const;
+
+    class GameState* getGameState() const { return game_state; }
 
 private:
     Sprite* sprite;
@@ -66,6 +69,7 @@ private:
     FILE* bin_file;
 
     teenyat cpu;
+    class GameState* game_state = nullptr;
 
     PlayerState state = PlayerState::IDLE;
     PlayerDirection shooting_direction = PlayerDirection::DOWN;

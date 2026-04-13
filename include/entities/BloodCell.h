@@ -21,6 +21,9 @@ public:
     void render(SDL_Renderer *renderer);
     void update();
 
+    int getX() const { return (int)positions[0].x; }
+    int getY() const { return (int)positions[0].y; }
+
 private:
     Vec2f positions[NUM_BALLS];
     Vec2f velocities[NUM_BALLS];

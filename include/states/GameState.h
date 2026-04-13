@@ -14,6 +14,7 @@
 /* TeenyAT MMIO Ports */
 #define SHOOT_DIR 0x9000
 #define MOVE_DIR  0x9001
+#define NEAREST_BLOODCELL_DIR 0x9002
  
 class GameState : public State {
 public:

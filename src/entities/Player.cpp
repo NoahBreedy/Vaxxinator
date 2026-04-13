@@ -19,11 +19,12 @@ Player::Player(int startX, int startY, SDL_Renderer* renderer, std::string bin_p
     }
 }
 
-void Player::init_player_cpu(TNY_READ_FROM_BUS_FNPTR bus_read, TNY_WRITE_TO_BUS_FNPTR bus_write) {
+void Player::init_player_cpu(TNY_READ_FROM_BUS_FNPTR bus_read, TNY_WRITE_TO_BUS_FNPTR bus_write, class GameState* gs) {
     bool valid = tny_init_from_file(&cpu, bin_file, bus_read, bus_write);
     if(!valid) {
         std::cout << "Failed to init teenyAT: " << std::endl;
     }
+    game_state = gs;
     cpu.ex_data = this;
 }
 
