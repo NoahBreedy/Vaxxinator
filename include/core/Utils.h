@@ -2,6 +2,8 @@
 #define __UTILS__
 
 #include <cstdint>
+#include <string.h>
+
 
 typedef struct Vec2 {
     int16_t x;

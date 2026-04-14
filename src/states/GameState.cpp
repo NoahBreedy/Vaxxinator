@@ -63,11 +63,11 @@ void GameState::render() {
     /* Blit the texture to the renderer */
     SDL_RenderCopy(state_machine->renderer, background_texture, nullptr, nullptr);
 
-    for(BloodCell cell : cells) {
+    for(BloodCell& cell : cells) {
         cell.render(state_machine->renderer);
     }
     
-    for(Player player : players) {
+    for(Player& player : players) {
         player.render();
     }
     
@@ -177,6 +177,7 @@ void GameState::enter() {
     /* create vector of players with the associated binary files 
     *  and then init their cpu
     */
+    players.reserve(4); // reserve space for 4 players to avoid reallocations
     int index = 0;
     for(int i = 0; i < 4; i++) { 
         if(state_machine->syringe_paths[i] != ""){

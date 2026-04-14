@@ -24,27 +24,25 @@ void hsv_to_rgb(float h, float s, float v, uint8_t& r, uint8_t& g, uint8_t& b) {
 }
 
 nfdchar_t* openFileDialog() {
-        NFD::Guard nfdGuard;
+    NFD::Guard nfdGuard;
 
-        // auto-freeing memory
-        NFD::UniquePath outPath;
+    // auto-freeing memory
+    NFD::UniquePath outPath;
 
-        // prepare filters for the dialog
-        nfdfilteritem_t filterItem[1] = {{"Binary", "bin"}};
+    // prepare filters for the dialog
+    nfdfilteritem_t filterItem[1] = {{"Binary", "bin"}};
 
-        nfdchar_t* filePath = nullptr;
-
-        // show the dialog
-        nfdresult_t result = NFD::OpenDialog(outPath, filterItem, 1);
-        if (result == NFD_OKAY) {
-            filePath = outPath.get();
-        } else if (result == NFD_CANCEL) {
-            std::cout << "User pressed cancel." << std::endl;
-        } else {
-            std::cout << "Error: " << NFD::GetError() << std::endl;
-        }
-
-    return filePath;
+    // show the dialog
+    nfdresult_t result = NFD::OpenDialog(outPath, filterItem, 1);
+    if (result == NFD_OKAY) {
+        // Duplicate the string before outPath destructs
+        return strdup(outPath.get()); // caller must free()
+    } else if (result == NFD_CANCEL) {
+        std::cout << "User pressed cancel." << std::endl;
+    } else {
+        std::cout << "Error: " << NFD::GetError() << std::endl;
+    }
+    return nullptr;
 }
 
 float rand_float(float min, float max) {

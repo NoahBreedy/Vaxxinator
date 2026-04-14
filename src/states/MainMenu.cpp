@@ -27,6 +27,7 @@ void MainMenu::onSyringeClicked(Clay_ElementId elementId, Clay_PointerData point
         if (filePath) {
             menu->syringe_loaded[i] = true;
             menu->state_machine->syringe_paths[i] = std::string(filePath);
+            free(filePath); // Remember to free the duplicated string after use
         } else {
             std::cout << "No file selected." << std::endl;
             menu->syringe_loaded[i] = false;
