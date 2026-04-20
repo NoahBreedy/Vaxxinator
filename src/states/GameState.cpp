@@ -271,6 +271,51 @@ void GameState::bus_read(teenyat *t, tny_uword addr, tny_word *data, uint16_t *d
                 data->u = (tny_uword)direction;
                 break;
             }
+        case NEAREST_PLAYER_DIR:
+            {
+                if (player->getGameState()->players.size() <= 1) {
+                    data->u = (tny_uword)PlayerDirection::NONE; // No other players
+                    break;
+                }
+
+                // Find the index of the nearest player to the player
+                int playerX = player->getX();
+                int playerY = player->getY();
+                int nearestIndex = 0;
+                float nearestDist = std::numeric_limits<float>::max();
+                for(int i = 0; i < player->getGameState()->players.size(); i++) {
+                    Player& otherPlayer = player->getGameState()->players[i];
+                    if(&otherPlayer == player) continue; // skip self
+                    float dist = std::sqrt(std::pow(playerX - otherPlayer.getX(), 2) + std::pow(playerY - otherPlayer.getY(), 2));
+                    if(dist < nearestDist) {
+                        nearestDist = dist;
+                        nearestIndex = i;
+                    }
+                }
+                
+                // Calculate direction from player to nearest other player
+                Player& nearestPlayer = player->getGameState()->players[nearestIndex];
+                float dx = nearestPlayer.getX() - playerX;
+                float dy = nearestPlayer.getY() - playerY;
+
+                // atan2 gives angle in (-π, π], divide circle into 8 equal 45° sectors
+                float angle = std::atan2(dy, dx) * (180.0f / M_PI); // -180 to 180
+                if (angle < 0) angle += 360.0f;                      // 0 to 360
+                angle = std::fmod(angle + 270.0f, 360.0f); // rotate so 0° = DOWN
+
+                PlayerDirection direction;
+                if      (angle <  22.5f || angle >= 337.5f) direction = PlayerDirection::DOWN;
+                else if (angle <  67.5f)                    direction = PlayerDirection::DOWN_LEFT;
+                else if (angle < 112.5f)                    direction = PlayerDirection::LEFT;
+                else if (angle < 157.5f)                    direction = PlayerDirection::UP_LEFT;
+                else if (angle < 202.5f)                    direction = PlayerDirection::UP;
+                else if (angle < 247.5f)                    direction = PlayerDirection::UP_RIGHT;
+                else if (angle < 292.5f)                    direction = PlayerDirection::RIGHT;
+                else                                        direction = PlayerDirection::DOWN_RIGHT;
+
+                data->u = (tny_uword)direction;
+                break;
+            } 
         default:
             break;
     }

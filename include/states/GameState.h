@@ -15,6 +15,7 @@
 #define SHOOT_DIR 0x9000
 #define MOVE_DIR  0x9001
 #define NEAREST_BLOODCELL_DIR 0x9002
+#define NEAREST_PLAYER_DIR 0x9003
  
 class GameState : public State {
 public:
