@@ -55,6 +55,7 @@ add_executable(${PROJECT_NAME}
     src/core/Input.cpp
     src/core/StateMachine.cpp
     src/core/Utils.cpp
+    src/core/Mixer.cpp
     src/core/teenyat.c
     src/core/open-simplex-noise.c
     src/graphics/Animation.cpp
@@ -79,6 +80,7 @@ target_link_libraries(${PROJECT_NAME}
     SDL2_gfx
     SDL2
     SDL2_ttf
+    SDL2_mixer
     SDL2_image
     nfd
 )

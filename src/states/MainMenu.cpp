@@ -13,6 +13,7 @@ void MainMenu::injectButtonClicked(Clay_ElementId elementId, Clay_PointerData po
     MainMenu* menu = (MainMenu*)userData;
     
     if (pointerData.state == CLAY_POINTER_DATA_RELEASED_THIS_FRAME) {
+        menu->state_machine->audio_mixer.play_audio("assets/audio/synth.wav");
         menu->state_machine->transition("GameState");
     }
 }
@@ -20,8 +21,9 @@ void MainMenu::injectButtonClicked(Clay_ElementId elementId, Clay_PointerData po
 void MainMenu::onSyringeClicked(Clay_ElementId elementId, Clay_PointerData pointerData, void *userData) {
     MainMenu* menu = ((SyringeData*)userData)->userData;
     int i = ((SyringeData*)userData)->index;
-
+   
     if (pointerData.state == CLAY_POINTER_DATA_PRESSED_THIS_FRAME) {
+        menu->state_machine->audio_mixer.play_audio("assets/audio/blip.wav");
         nfdchar_t* filePath = openFileDialog();
 
         if (filePath) {

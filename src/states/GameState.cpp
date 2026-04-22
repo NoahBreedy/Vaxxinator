@@ -105,6 +105,9 @@ void GameState::update() {
     if (frame_count % BULLET_SPAWN_RATE == 0) {
         for(Player& player : players) {
             if(player.isShooting()) {
+
+                state_machine->audio_mixer.play_audio("assets/audio/laser.wav");
+
                 PlayerDirection shootDir = player.getShooting();
                 
                 float dirX = 0.0f, dirY = 0.0f;
@@ -215,7 +218,7 @@ void GameState::exit() {
     open_simplex_noise_free(noise_ctx1);
     SDL_DestroyTexture(background_texture);
     pixels = nullptr;
-
+    state_machine->audio_mixer.stop_music();
     cells.clear();
     players.clear();
     bullets.clear();

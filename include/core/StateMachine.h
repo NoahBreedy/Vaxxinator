@@ -5,11 +5,13 @@
 #include <string>
 #include <memory>
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include "clay/clay.h"
 #include "clay/clay_renderer_SDL2.h"
 
 #include "states/DefaultState.h"
 #include "core/Input.h"
+#include "core/Mixer.h"
 
 #define CANVAS_WIDTH  320
 #define CANVAS_HEIGHT 240
@@ -50,6 +52,8 @@ public:
 
     int PLAYER_COUNT;
     std::string  syringe_paths[4];
+
+    Mixer audio_mixer;
 
     void update_ui_scale() { ui_scale = (window_width * BASE_SCALE) / (float)CANVAS_WIDTH; }
 

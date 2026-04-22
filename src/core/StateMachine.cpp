@@ -38,7 +38,7 @@ static int windowEventWatch(void* userdata, SDL_Event* event) {
 
 /* SDL2 gets setup here and then we build our states */
 bool StateMachine::init() {
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO) < 0) {
         std::cout << "SDL_Init() fail... " << SDL_GetError() << std::endl;
         return false;
     }
@@ -46,6 +46,10 @@ bool StateMachine::init() {
     if(TTF_Init() < 0) {
         std::cout << "TTF_Init() fail... " << TTF_GetError() << std::endl;
         SDL_Quit();
+        return false;
+    }
+
+    if(!audio_mixer.init()) {
         return false;
     }
 
@@ -135,6 +139,7 @@ void StateMachine::cleanup_clay() {
 StateMachine::~StateMachine() {
     if(application_initialized) {
         cleanup_clay();
+        audio_mixer.shutdown();
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
     }

@@ -113,6 +113,8 @@ void IntroScreen::enter() {
     SDL_GetRendererOutputSize(state_machine->renderer, &last_window_width, &last_window_height);
     
     createTextTextures();
+
+    state_machine->audio_mixer.play_music("assets/audio/intro.wav");
 }
 
 void IntroScreen::exit() {
@@ -127,6 +129,8 @@ void IntroScreen::exit() {
         }
     }
     text_textures.clear();
+
+    state_machine->audio_mixer.stop_music();
 }
 
 void IntroScreen::createTextTextures() {
