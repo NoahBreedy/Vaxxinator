@@ -9,6 +9,7 @@
 #include "entities/BloodCell.h"
 #include "entities/Player.h"
 #include "entities/Bullet.h"
+#include "entities/Virus.h"
 #include "core/teenyat.h"
 
 /* TeenyAT MMIO Ports */
@@ -16,6 +17,7 @@
 #define MOVE_DIR  0x9001
 #define NEAREST_BLOODCELL_DIR 0x9002
 #define NEAREST_PLAYER_DIR 0x9003
+#define NEAREST_VIRUS_DIR 0x9004
  
 class GameState : public State {
 public:
@@ -50,6 +52,7 @@ private:
     std::vector<BloodCell> cells;
     std::vector<Player> players;
     std::vector<Bullet> bullets;
+    std::vector<Virus*> viruses;
     
     static constexpr int BULLET_SPAWN_RATE = 5; // Spawn bullet every X cycles
 

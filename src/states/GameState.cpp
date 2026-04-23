@@ -66,6 +66,10 @@ void GameState::render() {
     for(BloodCell& cell : cells) {
         cell.render(state_machine->renderer);
     }
+
+    for(Virus* virus : viruses) {
+        virus->render(state_machine->renderer);
+    }
     
     for(Player& player : players) {
         player.render();
@@ -99,6 +103,15 @@ void GameState::update() {
     // Wrap player positions around screen
     for(int i = 0; i < players.size(); i++) {
         players[i].wrapPosition(CANVAS_WIDTH, CANVAS_HEIGHT);
+    }
+    
+    for(Virus* virus : viruses) {
+        virus->update();
+    }
+    
+    // Wrap virus positions around screen
+    for(Virus* virus : viruses) {
+        virus->wrapPosition(CANVAS_WIDTH, CANVAS_HEIGHT);
     }
     
     // Spawn bullets from shooting players every BULLET_SPAWN_RATE cycles
@@ -209,6 +222,13 @@ void GameState::enter() {
         cells.push_back(BloodCell((int)rand_float(8,CANVAS_WIDTH-8), (int)rand_float(8,CANVAS_HEIGHT-8), 8, std::rand() % 2, state_machine->renderer));
     }
     
+    // Spawn 2 of each virus type (for now, can adjust later)
+    for(int i = 0; i < 2; i++) {
+        viruses.push_back(new CircleVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10));
+        viruses.push_back(new TriangleVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10));
+        viruses.push_back(new SquareVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10));
+    }
+    
 }
 
 void GameState::exit() {
@@ -222,6 +242,10 @@ void GameState::exit() {
     cells.clear();
     players.clear();
     bullets.clear();
+    for(Virus* virus : viruses) {
+        delete virus;
+    }
+    viruses.clear();
 
 }
 
@@ -318,7 +342,52 @@ void GameState::bus_read(teenyat *t, tny_uword addr, tny_word *data, uint16_t *d
 
                 data->u = (tny_uword)direction;
                 break;
-            } 
+            }
+        case NEAREST_VIRUS_DIR:
+            {
+                if (player->getGameState()->viruses.size() == 0) {
+                    data->u = (tny_uword)PlayerDirection::NONE; // No viruses
+                    break;
+                }
+
+                // Find the index of the nearest virus to the player
+                int playerX = player->getX();
+                int playerY = player->getY();
+                int nearestIndex = 0;
+                float nearestDist = std::numeric_limits<float>::max();
+                for(int i = 0; i < player->getGameState()->viruses.size(); i++) {
+                    Virus* virus = player->getGameState()->viruses[i];
+                    float dist = std::sqrt(std::pow(playerX - virus->getX(), 2) + std::pow(playerY - virus->getY(), 2));
+                    if(dist < nearestDist) {
+                        nearestDist = dist;
+                        nearestIndex = i;
+                    }
+                }
+                
+                // Calculate direction from player to nearest virus
+                Virus* nearestVirus = player->getGameState()->viruses[nearestIndex];
+                float dx = nearestVirus->getX() - playerX;
+                float dy = nearestVirus->getY() - playerY;
+
+                // atan2 gives angle in (-π, π], divide circle into 8 equal 45° sectors
+                float angle = std::atan2(dy, dx) * (180.0f / M_PI); // -180 to 180
+                if (angle < 0) angle += 360.0f;                      // 0 to 360
+                angle = std::fmod(angle + 270.0f, 360.0f); // rotate so 0° = DOWN
+
+                PlayerDirection direction;
+                if      (angle <  22.5f || angle >= 337.5f) direction = PlayerDirection::DOWN;
+                else if (angle <  67.5f)                    direction = PlayerDirection::DOWN_LEFT;
+                else if (angle < 112.5f)                    direction = PlayerDirection::LEFT;
+                else if (angle < 157.5f)                    direction = PlayerDirection::UP_LEFT;
+                else if (angle < 202.5f)                    direction = PlayerDirection::UP;
+                else if (angle < 247.5f)                    direction = PlayerDirection::UP_RIGHT;
+                else if (angle < 292.5f)                    direction = PlayerDirection::RIGHT;
+                else                                        direction = PlayerDirection::DOWN_RIGHT;
+
+                data->u = (tny_uword)direction;
+                break;
+            }
+            
         default:
             break;
     }
