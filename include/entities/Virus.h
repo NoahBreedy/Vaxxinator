@@ -6,10 +6,11 @@
 #include <SDL2_gfxPrimitives.h>
 
 #include "core/Utils.h"
+#include "graphics/Sprite.h"
 
 class Virus {
 public:
-    explicit Virus(uint16_t _x, uint16_t _y, uint16_t _size);
+    explicit Virus(uint16_t _x, uint16_t _y, uint16_t _size, SDL_Renderer *renderer);
     virtual ~Virus() = default;
 
     virtual void render(SDL_Renderer *renderer) = 0;
@@ -19,6 +20,7 @@ public:
     int getX() const { return (int)centerPosition.x; }
     int getY() const { return (int)centerPosition.y; }
     virtual SDL_Rect getHitbox() const = 0;
+    Sprite *sprite;
 
 protected:
     Vec2f position; // Top-left corner of the virus (used for triangles and squares)
@@ -30,7 +32,7 @@ protected:
 
 class CircleVirus : public Virus {
 public:
-    explicit CircleVirus(uint16_t _x, uint16_t _y, uint16_t _size);
+    explicit CircleVirus(uint16_t _x, uint16_t _y, uint16_t _size, SDL_Renderer *renderer);
     ~CircleVirus() = default;
 
     void render(SDL_Renderer *renderer) override;
@@ -40,7 +42,7 @@ public:
 
 class TriangleVirus : public Virus {
 public:
-    explicit TriangleVirus(uint16_t _x, uint16_t _y, uint16_t _size);
+    explicit TriangleVirus(uint16_t _x, uint16_t _y, uint16_t _size, SDL_Renderer *renderer);
     ~TriangleVirus() = default;
 
     void render(SDL_Renderer *renderer) override;
@@ -50,7 +52,7 @@ public:
 
 class SquareVirus : public Virus {
 public:
-    explicit SquareVirus(uint16_t _x, uint16_t _y, uint16_t _size);
+    explicit SquareVirus(uint16_t _x, uint16_t _y, uint16_t _size, SDL_Renderer *renderer);
     ~SquareVirus() = default;
 
     void render(SDL_Renderer *renderer) override;

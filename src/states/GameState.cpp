@@ -369,9 +369,9 @@ void GameState::enter() {
     
     // Spawn 2 of each virus type (for now, can adjust later)
     for(int i = 0; i < 2; i++) {
-        viruses.push_back(new CircleVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10));
-        viruses.push_back(new TriangleVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10));
-        viruses.push_back(new SquareVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10));
+        viruses.push_back(new CircleVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10, state_machine->renderer));
+        viruses.push_back(new TriangleVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10, state_machine->renderer));
+        viruses.push_back(new SquareVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10, state_machine->renderer));
     }
     
 }
