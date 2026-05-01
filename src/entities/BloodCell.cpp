@@ -81,3 +81,9 @@ void BloodCell::update() {
         }
     }
 }
+
+SDL_Rect BloodCell::getHitbox() const {
+    int x = (int)positions[0].x;
+    int y = (int)positions[0].y;
+    return {x - radius, y - radius, radius * 2, radius * 2};
+}

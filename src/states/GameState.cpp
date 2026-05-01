@@ -79,6 +79,37 @@ void GameState::render() {
         bullet.render(state_machine->renderer);
     }
 
+    // Debug: Render hitboxes if enabled
+    if (debug_hitboxes) {
+        // Render cell hitboxes
+        for(BloodCell& cell : cells) {
+            SDL_Rect hitbox = cell.getHitbox();
+            SDL_SetRenderDrawColor(state_machine->renderer, 255, 255, 255, 255);
+            SDL_RenderDrawRect(state_machine->renderer, &hitbox);
+        }
+        
+        // Render virus hitboxes
+        for(Virus* virus : viruses) {
+            SDL_Rect hitbox = virus->getHitbox();
+            SDL_SetRenderDrawColor(state_machine->renderer, 255, 255, 255, 255);
+            SDL_RenderDrawRect(state_machine->renderer, &hitbox);
+        }
+        
+        // Render player hitboxes
+        for(Player& player : players) {
+            SDL_Rect hitbox = player.getHitbox();
+            SDL_SetRenderDrawColor(state_machine->renderer, 255, 255, 255, 255);
+            SDL_RenderDrawRect(state_machine->renderer, &hitbox);
+        }
+        
+        // Render bullet hitboxes
+        for(Bullet& bullet : bullets) {
+            SDL_Rect hitbox = bullet.getHitbox();
+            SDL_SetRenderDrawColor(state_machine->renderer, 255, 255, 255, 255);
+            SDL_RenderDrawRect(state_machine->renderer, &hitbox);
+        }
+    }
+
 }
 
 void GameState::update() {
@@ -87,6 +118,10 @@ void GameState::update() {
 
         if (key == SDLK_SPACE) {
             state_machine->transition("MainMenu");
+        }
+        
+        if (key == SDLK_d) {
+            debug_hitboxes = !debug_hitboxes;
         }
     }
 
@@ -164,7 +199,9 @@ void GameState::update() {
                 
                 int spawnX, spawnY;
                 player.getBulletSpawnPos(spawnX, spawnY);
-                bullets.push_back(Bullet(spawnX, spawnY, dirX, dirY));
+                Bullet newBullet(spawnX, spawnY, dirX, dirY);
+                newBullet.setSpawningPlayer(&player);
+                bullets.push_back(newBullet);
             }
         }
     }
@@ -178,6 +215,54 @@ void GameState::update() {
     for(int i = bullets.size() - 1; i >= 0; i--) {
         if(bullets[i].isOutOfBounds(CANVAS_WIDTH, CANVAS_HEIGHT)) {
             bullets.erase(bullets.begin() + i);
+        }
+    }
+
+    // Collision detection
+    // Check bullet-virus collisions
+    for(int b = 0; b < bullets.size(); b++) {
+        for(int v = 0; v < viruses.size(); v++) {
+            if(checkCollision(bullets[b].getHitbox(), viruses[v]->getHitbox())) {
+                std::cout << "Bullet collided with Virus" << std::endl;
+            }
+        }
+    }
+    
+    // Check bullet-cell collisions
+    for(int b = 0; b < bullets.size(); b++) {
+        for(int c = 0; c < cells.size(); c++) {
+            if(checkCollision(bullets[b].getHitbox(), cells[c].getHitbox())) {
+                std::cout << "Bullet collided with BloodCell" << std::endl;
+            }
+        }
+    }
+    
+    // Check bullet-player collisions (excluding spawning player)
+    for(int b = 0; b < bullets.size(); b++) {
+        for(int p = 0; p < players.size(); p++) {
+            if(bullets[b].getSpawningPlayer() != &players[p]) {  // Don't collide with spawning player
+                if(checkCollision(bullets[b].getHitbox(), players[p].getHitbox())) {
+                    std::cout << "Bullet collided with Player" << std::endl;
+                }
+            }
+        }
+    }
+    
+    // Check player-virus collisions
+    for(int p = 0; p < players.size(); p++) {
+        for(int v = 0; v < viruses.size(); v++) {
+            if(checkCollision(players[p].getHitbox(), viruses[v]->getHitbox())) {
+                std::cout << "Player collided with Virus" << std::endl;
+            }
+        }
+    }
+    
+    // Check player-cell collisions
+    for(int p = 0; p < players.size(); p++) {
+        for(int c = 0; c < cells.size(); c++) {
+            if(checkCollision(players[p].getHitbox(), cells[c].getHitbox())) {
+                std::cout << "Player collided with BloodCell" << std::endl;
+            }
         }
     }
 
@@ -405,4 +490,9 @@ void GameState::bus_write(teenyat *t, tny_uword addr, tny_word data, uint16_t *d
         default:
             break;
     }
+}
+
+bool GameState::checkCollision(const SDL_Rect& a, const SDL_Rect& b) const {
+    return !(a.x + a.w <= b.x || b.x + b.w <= a.x ||
+             a.y + a.h <= b.y || b.y + b.h <= a.y);
 }

@@ -51,6 +51,7 @@ public:
     void init_player_cpu(TNY_READ_FROM_BUS_FNPTR bus_read, TNY_WRITE_TO_BUS_FNPTR bus_write, class GameState* game_state);
     
     void getBulletSpawnPos(int& spawnX, int& spawnY) const;
+    SDL_Rect getHitbox() const;
 
     class GameState* getGameState() const { return game_state; }
 

@@ -23,6 +23,7 @@ public:
 
     int getX() const { return (int)positions[0].x; }
     int getY() const { return (int)positions[0].y; }
+    SDL_Rect getHitbox() const;
 
 private:
     Vec2f positions[NUM_BALLS];

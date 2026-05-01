@@ -33,6 +33,7 @@ public:
     static void bus_write(teenyat *t, tny_uword addr, tny_word data, uint16_t *delay);
 
 private:
+    bool checkCollision(const SDL_Rect& a, const SDL_Rect& b) const;
     /* This stuff is boiler plate needed for getting 
      * all of the pixel data out of a texture (hardware accelerated)
      */
@@ -56,6 +57,7 @@ private:
     
     static constexpr int BULLET_SPAWN_RATE = 5; // Spawn bullet every X cycles
 
+    bool debug_hitboxes = false;
 };
 
 #endif /* __GAME_STATE__ */

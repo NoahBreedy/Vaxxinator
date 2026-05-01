@@ -102,3 +102,25 @@ void SquareVirus::update() {
     centerPosition.x = position.x + size;
     centerPosition.y = position.y + size;
 }
+
+SDL_Rect CircleVirus::getHitbox() const {
+    int x = (int)position.x;
+    int y = (int)position.y;
+    int expandedSize = (int)(size * 1.25);
+    return {x - expandedSize, y - expandedSize, expandedSize * 2, expandedSize * 2};
+}
+
+SDL_Rect TriangleVirus::getHitbox() const {
+    int x = (int)position.x;
+    int y = (int)position.y;
+    // Bounding box for triangle: top vertex at (x, y-size), base vertices at (x±size, y+size)
+    return {x - (int)size, y - (int)size, size * 2, size * 2};
+}
+
+SDL_Rect SquareVirus::getHitbox() const {
+    int x = (int)position.x;
+    int y = (int)position.y;
+    // Square spans from (x-size, y-size) to (x+size, y+size)
+    int expandedSize = (int)(size * 1.25);
+    return {x - expandedSize, y - expandedSize, expandedSize * 2, expandedSize * 2};
+}

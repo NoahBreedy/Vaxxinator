@@ -18,6 +18,7 @@ public:
     
     int getX() const { return (int)centerPosition.x; }
     int getY() const { return (int)centerPosition.y; }
+    virtual SDL_Rect getHitbox() const = 0;
 
 protected:
     Vec2f position; // Top-left corner of the virus (used for triangles and squares)
@@ -34,6 +35,7 @@ public:
 
     void render(SDL_Renderer *renderer) override;
     void update() override;
+    SDL_Rect getHitbox() const override;
 };
 
 class TriangleVirus : public Virus {
@@ -43,6 +45,7 @@ public:
 
     void render(SDL_Renderer *renderer) override;
     void update() override;
+    SDL_Rect getHitbox() const override;
 };
 
 class SquareVirus : public Virus {
@@ -52,6 +55,7 @@ public:
 
     void render(SDL_Renderer *renderer) override;
     void update() override;
+    SDL_Rect getHitbox() const override;
 };
 
 #endif /* __VIRUS__ */

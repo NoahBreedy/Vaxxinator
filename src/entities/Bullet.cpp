@@ -1,5 +1,6 @@
 #include "entities/Bullet.h"
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <cmath>
 
 Bullet::Bullet(float startX, float startY, float dirX, float dirY, float speed)
     : x(startX), y(startY) {
@@ -25,4 +26,10 @@ void Bullet::render(SDL_Renderer* renderer) {
 
 bool Bullet::isOutOfBounds(int canvasWidth, int canvasHeight) const {
     return x < -50 || x > canvasWidth + 50 || y < -50 || y > canvasHeight + 50;
+}
+
+SDL_Rect Bullet::getHitbox() const {
+    // Create a small square hitbox around the bullet center
+    const int HITBOX_SIZE = 4;
+    return {(int)x - HITBOX_SIZE / 2, (int)y - HITBOX_SIZE / 2, HITBOX_SIZE, HITBOX_SIZE};
 }

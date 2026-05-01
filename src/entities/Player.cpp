@@ -246,3 +246,10 @@ void Player::getBulletSpawnPos(int& spawnX, int& spawnY) const {
 void Player::render() {
     sprite->render();
 }
+
+SDL_Rect Player::getHitbox() const {
+    int frameWidth = sprite->getFrameWidth();
+    int frameHeight = sprite->getFrameHeight();
+    int scale = sprite->getScale();
+    return {x, y, frameWidth * scale, frameHeight * scale};
+}
