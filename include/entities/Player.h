@@ -54,12 +54,18 @@ public:
     SDL_Rect getHitbox() const;
 
     class GameState* getGameState() const { return game_state; }
+    
+    int getHealth() const { return health; }
+    void setHealth(int h) { health = h; }
+    void takeDamage(int damage) { health -= damage; }
+    bool isAlive() const { return health > 0; }
 
 private:
     Sprite* sprite;
     
     int x;
     int y;
+    int health = 100;
     static constexpr float MOVE_SPEED = 3.0f;
     float velocityX = 0.0f;
     float velocityY = 0.0f;

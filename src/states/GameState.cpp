@@ -1,5 +1,6 @@
 #include <ctime>
 #include <iostream>
+#include <algorithm>
 #include "states/GameState.h"
 
 #define STATE_NAME "GameState"
@@ -219,11 +220,18 @@ void GameState::update() {
     }
 
     // Collision detection
+    // Track which entities to remove/modify
+    std::vector<int> viruses_to_remove;
+    std::vector<int> cells_to_remove;
+    std::vector<int> bullets_to_remove;
+    
     // Check bullet-virus collisions
     for(int b = 0; b < bullets.size(); b++) {
         for(int v = 0; v < viruses.size(); v++) {
             if(checkCollision(bullets[b].getHitbox(), viruses[v]->getHitbox())) {
-                std::cout << "Bullet collided with Virus" << std::endl;
+                std::cout << "Bullet collided with Virus - Virus destroyed" << std::endl;
+                viruses_to_remove.push_back(v);
+                bullets_to_remove.push_back(b);
             }
         }
     }
@@ -232,7 +240,9 @@ void GameState::update() {
     for(int b = 0; b < bullets.size(); b++) {
         for(int c = 0; c < cells.size(); c++) {
             if(checkCollision(bullets[b].getHitbox(), cells[c].getHitbox())) {
-                std::cout << "Bullet collided with BloodCell" << std::endl;
+                std::cout << "Bullet collided with BloodCell - Cell destroyed" << std::endl;
+                cells_to_remove.push_back(c);
+                bullets_to_remove.push_back(b);
             }
         }
     }
@@ -242,7 +252,9 @@ void GameState::update() {
         for(int p = 0; p < players.size(); p++) {
             if(bullets[b].getSpawningPlayer() != &players[p]) {  // Don't collide with spawning player
                 if(checkCollision(bullets[b].getHitbox(), players[p].getHitbox())) {
-                    std::cout << "Bullet collided with Player" << std::endl;
+                    std::cout << "Bullet collided with Player - Player takes 5 damage" << std::endl;
+                    players[p].takeDamage(5);
+                    bullets_to_remove.push_back(b);
                 }
             }
         }
@@ -252,7 +264,8 @@ void GameState::update() {
     for(int p = 0; p < players.size(); p++) {
         for(int v = 0; v < viruses.size(); v++) {
             if(checkCollision(players[p].getHitbox(), viruses[v]->getHitbox())) {
-                std::cout << "Player collided with Virus" << std::endl;
+                std::cout << "Player collided with Virus - Player takes 20 damage" << std::endl;
+                players[p].takeDamage(20);
             }
         }
     }
@@ -261,8 +274,43 @@ void GameState::update() {
     for(int p = 0; p < players.size(); p++) {
         for(int c = 0; c < cells.size(); c++) {
             if(checkCollision(players[p].getHitbox(), cells[c].getHitbox())) {
-                std::cout << "Player collided with BloodCell" << std::endl;
+                std::cout << "Player collided with BloodCell - Cell collected! +50 points" << std::endl;
+                cells_to_remove.push_back(c);
+                score += 50;
             }
+        }
+    }
+    
+    // Check cell-virus collisions
+    for(int c = 0; c < cells.size(); c++) {
+        for(int v = 0; v < viruses.size(); v++) {
+            if(checkCollision(cells[c].getHitbox(), viruses[v]->getHitbox())) {
+                std::cout << "Cell collided with Virus - Cell destroyed" << std::endl;
+                cells_to_remove.push_back(c);
+            }
+        }
+    }
+    
+    // Remove entities in reverse order to avoid index shifting issues
+    std::sort(viruses_to_remove.rbegin(), viruses_to_remove.rend());
+    for(int v : viruses_to_remove) {
+        if(v >= 0 && v < viruses.size()) {
+            delete viruses[v];
+            viruses.erase(viruses.begin() + v);
+        }
+    }
+    
+    std::sort(cells_to_remove.rbegin(), cells_to_remove.rend());
+    for(int c : cells_to_remove) {
+        if(c >= 0 && c < cells.size()) {
+            cells.erase(cells.begin() + c);
+        }
+    }
+    
+    std::sort(bullets_to_remove.rbegin(), bullets_to_remove.rend());
+    for(int b : bullets_to_remove) {
+        if(b >= 0 && b < bullets.size()) {
+            bullets.erase(bullets.begin() + b);
         }
     }
 
