@@ -58,7 +58,6 @@ private:
     static constexpr int BULLET_SPAWN_RATE = 5; // Spawn bullet every X cycles
 
     bool debug_hitboxes = false;
-    uint64_t score = 0;
 };
 
 #endif /* __GAME_STATE__ */

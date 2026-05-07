@@ -73,7 +73,9 @@ void GameState::render() {
     }
     
     for(Player& player : players) {
-        player.render();
+        if(player.isAlive()) {
+            player.render();
+        }
     }
     
     for(Bullet& bullet : bullets) {
@@ -98,9 +100,11 @@ void GameState::render() {
         
         // Render player hitboxes
         for(Player& player : players) {
-            SDL_Rect hitbox = player.getHitbox();
-            SDL_SetRenderDrawColor(state_machine->renderer, 255, 255, 255, 255);
-            SDL_RenderDrawRect(state_machine->renderer, &hitbox);
+            if(player.isAlive()) {
+                SDL_Rect hitbox = player.getHitbox();
+                SDL_SetRenderDrawColor(state_machine->renderer, 255, 255, 255, 255);
+                SDL_RenderDrawRect(state_machine->renderer, &hitbox);
+            }
         }
         
         // Render bullet hitboxes
@@ -120,6 +124,10 @@ void GameState::update() {
         if (key == SDLK_SPACE) {
             state_machine->transition("MainMenu");
         }
+
+        if (key == SDLK_o) {
+            state_machine->transition("GameOver");
+        }
         
         if (key == SDLK_d) {
             debug_hitboxes = !debug_hitboxes;
@@ -127,33 +135,29 @@ void GameState::update() {
     }
 
     frame_count++;
+    bool any_player_alive = false;
     
     for(int i = 0; i < cells.size(); i++) {
         cells[i].update();
     }
     
     for(int i = 0; i < players.size(); i++) {
-        players[i].update();
-    }
-    
-    // Wrap player positions around screen
-    for(int i = 0; i < players.size(); i++) {
-        players[i].wrapPosition(CANVAS_WIDTH, CANVAS_HEIGHT);
+        if(players[i].isAlive()) {
+            players[i].wrapPosition(CANVAS_WIDTH, CANVAS_HEIGHT);
+            players[i].update();
+            any_player_alive = true;
+        }
     }
     
     for(Virus* virus : viruses) {
         virus->update();
-    }
-    
-    // Wrap virus positions around screen
-    for(Virus* virus : viruses) {
         virus->wrapPosition(CANVAS_WIDTH, CANVAS_HEIGHT);
     }
     
     // Spawn bullets from shooting players every BULLET_SPAWN_RATE cycles
     if (frame_count % BULLET_SPAWN_RATE == 0) {
         for(Player& player : players) {
-            if(player.isShooting()) {
+            if(player.isAlive() && player.isShooting()) {
 
                 state_machine->audio_mixer.play_audio("assets/audio/laser.wav");
 
@@ -240,7 +244,8 @@ void GameState::update() {
     for(int b = 0; b < bullets.size(); b++) {
         for(int c = 0; c < cells.size(); c++) {
             if(checkCollision(bullets[b].getHitbox(), cells[c].getHitbox())) {
-                std::cout << "Bullet collided with BloodCell - Cell destroyed" << std::endl;
+                std::cout << "Bullet collided with BloodCell - Cell destroyed lose 5 points" << std::endl;
+                bullets[b].getSpawningPlayer()->addScore(-5); 
                 cells_to_remove.push_back(c);
                 bullets_to_remove.push_back(b);
             }
@@ -250,7 +255,7 @@ void GameState::update() {
     // Check bullet-player collisions (excluding spawning player)
     for(int b = 0; b < bullets.size(); b++) {
         for(int p = 0; p < players.size(); p++) {
-            if(bullets[b].getSpawningPlayer() != &players[p]) {  // Don't collide with spawning player
+            if(players[p].isAlive() && bullets[b].getSpawningPlayer() != &players[p]) {  // Don't collide with spawning player
                 if(checkCollision(bullets[b].getHitbox(), players[p].getHitbox())) {
                     std::cout << "Bullet collided with Player - Player takes 5 damage" << std::endl;
                     players[p].takeDamage(5);
@@ -262,6 +267,7 @@ void GameState::update() {
     
     // Check player-virus collisions
     for(int p = 0; p < players.size(); p++) {
+        if(!players[p].isAlive()) continue;
         for(int v = 0; v < viruses.size(); v++) {
             if(checkCollision(players[p].getHitbox(), viruses[v]->getHitbox())) {
                 std::cout << "Player collided with Virus - Player takes 20 damage" << std::endl;
@@ -272,11 +278,12 @@ void GameState::update() {
     
     // Check player-cell collisions
     for(int p = 0; p < players.size(); p++) {
+        if(!players[p].isAlive()) continue;
         for(int c = 0; c < cells.size(); c++) {
             if(checkCollision(players[p].getHitbox(), cells[c].getHitbox())) {
                 std::cout << "Player collided with BloodCell - Cell collected! +50 points" << std::endl;
                 cells_to_remove.push_back(c);
-                score += 50;
+                players[p].addScore(50);
             }
         }
     }
@@ -312,6 +319,11 @@ void GameState::update() {
         if(b >= 0 && b < bullets.size()) {
             bullets.erase(bullets.begin() + b);
         }
+    }
+
+    // Check for GAME OVER
+    if (!any_player_alive && !players.empty()) {
+        state_machine->transition("GameOver");
     }
 
     SDL_RenderPresent(state_machine->renderer);
@@ -365,6 +377,11 @@ void GameState::enter() {
 }
 
 void GameState::exit() {
+
+    for(int p = 0; p < players.size(); p++) {
+        state_machine->player_scores[p] = players[p].getScore();
+    }
+
     SDL_RenderSetLogicalSize(state_machine->renderer, state_machine->window_width, state_machine->window_height);
 
     open_simplex_noise_free(noise_ctx0);

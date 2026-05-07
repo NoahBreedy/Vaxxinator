@@ -60,6 +60,8 @@ public:
     void takeDamage(int damage) { health -= damage; }
     bool isAlive() const { return health > 0; }
 
+    int getScore() const { return player_score; }
+    void addScore(uint64_t points) { player_score += points; }
 private:
     Sprite* sprite;
     
@@ -69,6 +71,7 @@ private:
     static constexpr float MOVE_SPEED = 3.0f;
     float velocityX = 0.0f;
     float velocityY = 0.0f;
+    uint64_t player_score = 0;
 
     bool is_shooting = false;
     bool is_moving = false;

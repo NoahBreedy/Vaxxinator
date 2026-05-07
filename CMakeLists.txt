@@ -63,6 +63,7 @@ add_executable(${PROJECT_NAME}
     src/states/MainMenu.cpp
     src/states/GameState.cpp
     src/states/IntroScreen.cpp
+    src/states/GameOver.cpp
     src/states/DemoState.cpp
     src/entities/BloodCell.cpp
     src/entities/Player.cpp

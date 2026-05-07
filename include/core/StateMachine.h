@@ -57,6 +57,7 @@ public:
 
     void update_ui_scale() { ui_scale = (window_width * BASE_SCALE) / (float)CANVAS_WIDTH; }
 
+    int player_scores[4] = {0,0,0,0};
 private:
     void init_states();
     void add(std::unique_ptr<State> state);
@@ -66,6 +67,7 @@ private:
     std::map<std::string, std::unique_ptr<State>> state_map;
     bool application_initialized = false;
     void* clay_memory = nullptr;
+
 };
 
 #endif /* __STATE_MACHINE__ */

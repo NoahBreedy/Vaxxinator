@@ -5,6 +5,7 @@
 #include "states/GameState.h"
 #include "states/IntroScreen.h"
 #include "states/DemoState.h"
+#include "states/GameOver.h"
 
 static void handleClayError(Clay_ErrorData error) {
     std::cerr << "[Clay] " << error.errorText.chars << std::endl;
@@ -78,6 +79,7 @@ void StateMachine::init_states() {
     add(std::make_unique<GameState>(this));
     add(std::make_unique<IntroScreen>(this));
     add(std::make_unique<DemoState>(this));
+    add(std::make_unique<GameOver>(this));
 
     //transition("MainMenu"); // start at main menu state?
                             // maybe add a splash screen state later? lmk
