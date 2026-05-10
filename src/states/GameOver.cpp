@@ -85,6 +85,9 @@ void GameOver::enter() {
 void GameOver::exit() {
     results.clear();
     state_machine->current_level = -1;
+    for(int p = 0; p < 4; p++) {
+        state_machine->player_scores[p] = 0;
+    }
 }
 
 void GameOver::buildLayout() {

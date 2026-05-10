@@ -397,7 +397,7 @@ void GameState::enter() {
 
 void GameState::exit() {
     for(int p = 0; p < players.size(); p++) {
-        state_machine->player_scores[p] = players[p].getScore();
+        state_machine->player_scores[p] += players[p].getScore();
     }
 
     SDL_RenderSetLogicalSize(state_machine->renderer, state_machine->window_width, state_machine->window_height);
