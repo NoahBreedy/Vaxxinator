@@ -50,7 +50,7 @@ public:
     int window_height = CANVAS_HEIGHT;
     float ui_scale = BASE_SCALE;
 
-    int PLAYER_COUNT;
+    int PLAYER_COUNT = 0;
     std::string  syringe_paths[4];
 
     Mixer audio_mixer;
@@ -58,6 +58,8 @@ public:
     void update_ui_scale() { ui_scale = (window_width * BASE_SCALE) / (float)CANVAS_WIDTH; }
 
     int player_scores[4] = {0,0,0,0};
+
+    int current_level = -1;
 private:
     void init_states();
     void add(std::unique_ptr<State> state);

@@ -3,6 +3,8 @@
 #include <algorithm>
 #include "states/GameState.h"
 
+#include "core/Levels.h"
+
 #define STATE_NAME "GameState"
 GameState::GameState(StateMachine* machine): State(STATE_NAME, machine)
 {
@@ -118,15 +120,13 @@ void GameState::render() {
 }
 
 void GameState::update() {
+    bool should_preform_checks = true;
     if (state_machine->input_buffer.has_key()) {
         SDL_Keycode key = state_machine->input_buffer.pop_key();
 
-        if (key == SDLK_SPACE) {
-            state_machine->transition("MainMenu");
-        }
-
         if (key == SDLK_o) {
             state_machine->transition("GameOver");
+            should_preform_checks = false;
         }
         
         if (key == SDLK_d) {
@@ -321,9 +321,22 @@ void GameState::update() {
         }
     }
 
-    // Check for GAME OVER
-    if (!any_player_alive && !players.empty()) {
-        state_machine->transition("GameOver");
+    // actually awful why do I not just call return
+    // this is the problem with tired coding...
+    if(should_preform_checks) {
+        // Check for GAME OVER
+        if (!any_player_alive && !players.empty()) {
+            state_machine->transition("GameOver");
+            should_preform_checks = false;
+        }
+    }
+
+    if(should_preform_checks) {
+        // Check if we should move levels
+        if(viruses.size() == 0) {
+            state_machine->audio_mixer.play_audio("assets/audio/level.wav");
+            state_machine->transition("GameState");
+        }
     }
 
     SDL_RenderPresent(state_machine->renderer);
@@ -331,6 +344,9 @@ void GameState::update() {
 }
 
 void GameState::enter() {
+
+    state_machine->current_level = (state_machine->current_level + 1) % TOTAL_LEVELS;
+
     std::srand(std::time(nullptr));
     open_simplex_noise(std::rand(),&noise_ctx0);
     open_simplex_noise(std::rand(),&noise_ctx1);
@@ -361,23 +377,25 @@ void GameState::enter() {
     SDL_RenderSetIntegerScale(state_machine->renderer, SDL_TRUE);
     
     frame_count = 0;
-
-    cells.push_back(BloodCell(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, 8, true, state_machine->renderer));
-    for(int i = 0; i < 4; i++) {
+    
+    for(int i = 0; i < blood_cell_counts[state_machine->current_level]; i++) {
         cells.push_back(BloodCell((int)rand_float(8,CANVAS_WIDTH-8), (int)rand_float(8,CANVAS_HEIGHT-8), 8, std::rand() % 2, state_machine->renderer));
     }
     
-    // Spawn 2 of each virus type (for now, can adjust later)
-    for(int i = 0; i < 2; i++) {
+    // Spawn each virus type (for now, can adjust later)
+    for(int i = 0; i < virus1_count[state_machine->current_level]; i++) {
         viruses.push_back(new CircleVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10, state_machine->renderer));
+    }
+    for(int i = 0; i < virus2_count[state_machine->current_level]; i++) {
         viruses.push_back(new TriangleVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10, state_machine->renderer));
+    }
+    for(int i = 0; i < virus3_count[state_machine->current_level]; i++) {
         viruses.push_back(new SquareVirus((int)rand_float(20, CANVAS_WIDTH - 20), (int)rand_float(20, CANVAS_HEIGHT - 20), 10, state_machine->renderer));
     }
-    
+
 }
 
 void GameState::exit() {
-
     for(int p = 0; p < players.size(); p++) {
         state_machine->player_scores[p] = players[p].getScore();
     }

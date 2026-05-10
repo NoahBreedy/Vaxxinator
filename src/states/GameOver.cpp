@@ -84,6 +84,7 @@ void GameOver::enter() {
 
 void GameOver::exit() {
     results.clear();
+    state_machine->current_level = -1;
 }
 
 void GameOver::buildLayout() {
