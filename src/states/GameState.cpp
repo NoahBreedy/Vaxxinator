@@ -429,6 +429,11 @@ void GameState::bus_read(teenyat *t, tny_uword addr, tny_word *data, uint16_t *d
             break;
         case NEAREST_BLOODCELL_DIR:
             {
+                if (player->getGameState()->cells.size() == 0) {
+                    data->u = (tny_uword)PlayerDirection::NONE; // No blood cells
+                    break;
+                }
+                
                 // Find the index of the nearest blood cell to the player
                 int playerX = player->getX();
                 int playerY = player->getY();
